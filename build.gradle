@@ -1,4 +1,70 @@
-description = "mongoose-storage-mock"
+import groovy.json.JsonSlurper
+
+description = "Mongoose web storage mock"
+
+buildscript {
+	dependencies {
+		classpath "com.google.gradle:osdetector-gradle-plugin:1.4.0"
+	}
+	repositories {
+		mavenCentral()
+	}
+}
+
+apply plugin: "java"
+apply plugin: "maven"
+apply plugin: "signing"
+apply plugin: "com.google.osdetector"
+
+group = "com.github.emc-mongoose"
+version = defineVersion()
+
+tasks.withType(JavaCompile) {
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+task("create-dirs").doLast(
+	{
+		sourceSets*.java.srcDirs*.each { it.mkdirs() }
+		sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+	}
+)
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+
+	depVersion = [
+		commonsCodec      : "1.10",
+		commonsCollections: "4.1",
+		commonsLang       : "2.6",
+		disruptor         : "3.3.4",
+		jackson           : "2.8.4",
+		javassist         : "3.21.0-GA",
+		log4j             : "2.7",
+		metrics           : "3.1.2",
+		netty             : "4.1.6.Final",
+	]
+
+	setClassPath = {
+		configurations -> [
+			configurations.runtime
+				.collect { file ->
+				// it's 3rd party if jar file name doesn't contain the root project name
+				if(-1 == file.name.indexOf(rootProject.name)) {
+					["lib", file.name].join(File.separator)
+				} else {
+					file.name
+				}
+			}
+			.join(" "),
+		]
+			.join(" ")
+	}
+}
 
 dependencies {
 	compile(
@@ -41,4 +107,32 @@ jar {
 			"Main-Class": "com.emc.mongoose.storage.mock.Main"
 		)
 	}
+}
+
+task dist(type: Tar) {
+	group = "distribution"
+	description = "Generate Nagaina distribution tarball"
+	dependsOn tasks.withType(Jar)
+	baseName = rootProject.name
+	compression = Compression.GZIP
+	destinationDir = new File("build", "dist")
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	into("$baseName-$rootProject.version") {
+		into("config") {
+			from { "config" }
+		}
+		into("lib") {
+			from configurations.runtime {
+				exclude "${rootProject.name}*.jar"
+			}
+		}
+		from jar.outputs.files
+	}
+}
+
+String defineVersion() {
+	def configFilePath = [rootDir, "config", "defaults.json"].join(File.separator);
+	def inputFile = new File(configFilePath)
+	def json = new JsonSlurper().parseText(inputFile.text)
+	json.version
 }
