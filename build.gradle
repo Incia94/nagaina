@@ -42,11 +42,12 @@ ext {
 		commonsCollections: "4.1",
 		commonsLang       : "2.6",
 		disruptor         : "3.3.4",
-		jackson           : "2.8.4",
+		jackson           : "2.8.7",
 		javassist         : "3.21.0-GA",
-		log4j             : "2.7",
-		metrics           : "3.1.2",
-		netty             : "4.1.6.Final",
+		log4j             : "2.8.1",
+		metrics           : "3.2.1",
+		mongoose          : "[3.3,)",
+		netty             : "4.1.9.Final",
 	]
 
 	setClassPath = {
@@ -68,10 +69,10 @@ ext {
 
 dependencies {
 	compile(
-		"com.github.emc-mongoose:mongoose-common:3.3+",
-		"com.github.emc-mongoose:mongoose-model:3.3+",
-		"com.github.emc-mongoose:mongoose-storage-driver-net:3.3+",
-		"com.github.emc-mongoose:mongoose-ui:3.3+",
+		"com.github.emc-mongoose:mongoose-common:${depVersion.mongoose}",
+		"com.github.emc-mongoose:mongoose-model:${depVersion.mongoose}",
+		"com.github.emc-mongoose:mongoose-storage-driver-net:${depVersion.mongoose}",
+		"com.github.emc-mongoose:mongoose-ui:${depVersion.mongoose}",
 
 		"commons-lang:commons-lang:${depVersion.commonsLang}",
 		"org.apache.commons:commons-collections4:${depVersion.commonsCollections}",
@@ -101,11 +102,98 @@ dependencies {
 }
 
 jar {
+	archiveName "$project.name.$extension"
 	manifest {
 		attributes(
 			"Class-Path": setClassPath(configurations),
-			"Main-Class": "com.emc.mongoose.storage.mock.Main"
+			"Main-Class": "com.emc.mongoose.storage.mock.Main",
+			"Implementation-Version": version,
+			"Implementation-Title": "$name"
 		)
+	}
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	archiveName "$project.name-$classifier.$extension"
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	archiveName "$project.name-$classifier.$extension"
+	from javadoc.destinationDir
+}
+
+artifacts {
+	archives jar
+	archives sourcesJar
+	archives javadocJar
+}
+
+signing {
+	sign configurations.archives
+}
+
+// see http://central.sonatype.org/pages/gradle.html for details
+uploadArchives {
+
+	// prevent the execution for empty (not leaf) subprojects and tests packages
+	if(project.name.contains("tests")) {
+		return
+	}
+
+	def ossrhUsername = project.hasProperty("ossrhUsername") ?
+		project.property("ossrhUsername") : null
+	def ossrhPassword = project.hasProperty("ossrhPassword") ?
+		project.property("ossrhPassword") : null
+
+	repositories {
+		mavenDeployer {
+			beforeDeployment {
+				MavenDeployment deployment -> signing.signPom(deployment)
+			}
+
+			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+				authentication(userName: ossrhUsername, password: ossrhPassword)
+			}
+
+			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+				authentication(userName: ossrhUsername, password: ossrhPassword)
+			}
+
+			pom {
+
+				groupId = rootProject.group
+				name = "nagaina"
+				artifactId = name
+
+				project {
+					description = rootProject.description
+
+					url "https://github.com/emc-mongoose/nagaina/wiki"
+
+					scm {
+						connection "https://github.com/emc-mongoose/nagaina.git"
+						developerConnection "https://github.com/emc-mongoose/nagaina.git"
+						url "https://github.com/emc-mongoose/nagaina.git"
+					}
+
+					licenses {
+						license {
+							name "The MIT License (MIT)"
+							url "https://github.com/emc-mongoose/nagaina/wiki/License"
+						}
+					}
+
+					developers {
+						developer {
+							id "akurilov"
+							name "Andrey Kurilov"
+							email "akurilov123@gmail.com"
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -122,9 +210,7 @@ task dist(type: Tar) {
 			from { "config" }
 		}
 		into("lib") {
-			from configurations.runtime {
-				exclude "${rootProject.name}*.jar"
-			}
+			from configurations.runtime
 		}
 		from jar.outputs.files
 	}
