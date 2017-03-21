@@ -129,7 +129,15 @@ artifacts {
 	archives javadocJar
 }
 
+def ossrhUsername = project.hasProperty("ossrhUsername") ?
+	project.property("ossrhUsername") : null
+def ossrhPassword = project.hasProperty("ossrhPassword") ?
+	project.property("ossrhPassword") : null
+
 signing {
+	required {
+		gradle.taskGraph.hasTask("uploadArchives")
+	}
 	sign configurations.archives
 }
 
@@ -140,11 +148,6 @@ uploadArchives {
 	if(project.name.contains("tests")) {
 		return
 	}
-
-	def ossrhUsername = project.hasProperty("ossrhUsername") ?
-		project.property("ossrhUsername") : null
-	def ossrhPassword = project.hasProperty("ossrhPassword") ?
-		project.property("ossrhPassword") : null
 
 	repositories {
 		mavenDeployer {
