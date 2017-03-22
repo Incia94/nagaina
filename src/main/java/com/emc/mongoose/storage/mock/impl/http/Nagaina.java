@@ -9,7 +9,6 @@ import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.impl.base.BasicDataItemMock;
 import com.emc.mongoose.storage.mock.impl.base.StorageMockBase;
 import static com.emc.mongoose.ui.config.Config.ItemConfig;
-import static com.emc.mongoose.ui.config.Config.LoadConfig;
 import static com.emc.mongoose.ui.config.Config.StorageConfig;
 import static com.emc.mongoose.ui.config.Config.StorageConfig.NetConfig;
 import com.emc.mongoose.ui.log.LogUtil;
@@ -57,7 +56,7 @@ extends StorageMockBase<DataItemMock>{
 
 	@SuppressWarnings("ConstantConditions")
 	public Nagaina(
-		final StorageConfig storageConfig, final LoadConfig loadConfig, final ItemConfig itemConfig,
+		final StorageConfig storageConfig, final ItemConfig itemConfig,
 		final StepConfig stepConfig, final ContentSource contentSource,
 		final List<ChannelInboundHandler> handlers
 	) {

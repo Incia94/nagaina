@@ -11,7 +11,6 @@ import com.emc.mongoose.storage.mock.impl.http.request.S3RequestHandler;
 import com.emc.mongoose.storage.mock.impl.http.request.SwiftRequestHandler;
 import static com.emc.mongoose.ui.config.Config.ItemConfig.DataConfig.ContentConfig;
 import static com.emc.mongoose.ui.config.Config.ItemConfig;
-import static com.emc.mongoose.ui.config.Config.LoadConfig;
 import static com.emc.mongoose.ui.config.Config.StorageConfig;
 import static com.emc.mongoose.ui.config.Config.ItemConfig.NamingConfig;
 import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig.LimitConfig;
@@ -30,17 +29,14 @@ import java.util.List;
 public class StorageMockFactory {
 
 	private final StorageConfig storageConfig;
-	private final LoadConfig loadConfig;
 	private final ItemConfig itemConfig;
 	private final StepConfig stepConfig;
 	private final NamingConfig namingConfig;
 
 	public StorageMockFactory(
-		final StorageConfig storageConfig, final LoadConfig loadConfig, final ItemConfig itemConfig,
-		final StepConfig stepConfig
+		final StorageConfig storageConfig,  final ItemConfig itemConfig, final StepConfig stepConfig
 	) {
 		this.storageConfig = storageConfig;
-		this.loadConfig = loadConfig;
 		this.itemConfig = itemConfig;
 		this.stepConfig = stepConfig;
 		this.namingConfig = itemConfig.getNamingConfig();
@@ -55,7 +51,7 @@ public class StorageMockFactory {
 		);
 		final List<ChannelInboundHandler> handlers = new ArrayList<>();
 		final StorageMock<DataItemMock> storage = new Nagaina(
-			storageConfig, loadConfig, itemConfig, stepConfig, contentSrc, handlers
+			storageConfig, itemConfig, stepConfig, contentSrc, handlers
 		);
 		final StorageMockNode<DataItemMock> storageMockNode = new NagainaNode(
 			storage, contentSrc
@@ -83,7 +79,7 @@ public class StorageMockFactory {
 		);
 		final List<ChannelInboundHandler> handlers = new ArrayList<>();
 		final StorageMock<DataItemMock> storage = new Nagaina(
-			storageConfig, loadConfig, itemConfig, stepConfig, contentSrc, handlers
+			storageConfig, itemConfig, stepConfig, contentSrc, handlers
 		);
 		final LimitConfig limitConfig = stepConfig.getLimitConfig();
 		try {

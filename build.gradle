@@ -99,6 +99,11 @@ dependencies {
 		"org.apache.logging.log4j:log4j-jul:${depVersion.log4j}",
 		"org.javassist:javassist:${depVersion.javassist}",
 	)
+
+	testCompile(
+		"junit:junit:[4,)",
+		"com.github.fge:json-schema-validator:[2,)",
+	)
 }
 
 jar {

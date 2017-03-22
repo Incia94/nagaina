@@ -5,14 +5,7 @@
 				"file" : null,
 				"seed" : "7a42d9c483244167",
 				"ringSize" : "4MB"
-			},
-			"ranges" : {
-				"fixed" : null,
-				"random" : 0,
-				"threshold" : 0
-			},
-			"size" : "1MB",
-			"verify" : false
+			}
 		},
 		"input" : {
 			"file" : null,
@@ -29,22 +22,7 @@
 			"delay" : 0,
 			"file" : null,
 			"path" : null
-		},
-		"type" : "data"
-	},
-	"load" : {
-		"circular" : false,
-		"generator" : {
-			"addrs" : [
-				"127.0.0.1"
-			],
-			"remote" : false,
-			"shuffle" : false
-		},
-		"queue" : {
-			"size" : 1000000
-		},
-		"type" : "create"
+		}
 	},
 	"storage" : {
 		"auth" : {
@@ -52,37 +30,6 @@
 			"secret" : null,
 			"token" : null,
 			"uid" : null
-		},
-		"driver": {
-			"addrs" : [
-				"127.0.0.1"
-			],
-			"concurrency" : 1,
-			"impl" : [
-				{
-					"type" : "fs",
-					"file" : "mongoose-storage-driver-nio-fs.jar",
-					"fqcn" : "com.emc.mongoose.storage.driver.nio.fs.BasicFileStorageDriver"
-				},
-				{
-					"type" : "atmos",
-					"file" : "mongoose-storage-driver-net-http-atmos.jar",
-					"fqcn" : "com.emc.mongoose.storage.driver.net.http.atmos.AtmosStorageDriver"
-				},
-				{
-					"type" : "s3",
-					"file" : "mongoose-storage-driver-net-http-s3.jar",
-					"fqcn" : "com.emc.mongoose.storage.driver.net.http.s3.S3StorageDriver"
-				},
-				{
-					"type" : "swift",
-					"file" : "mongoose-storage-driver-net-http-swift.jar",
-					"fqcn" : "com.emc.mongoose.storage.driver.net.http.swift.SwiftStorageDriver"
-				}
-			],
-			"port" : 1099,
-			"remote": false,
-			"type" : "s3"
 		},
 		"mock" : {
 			"capacity" : 1000000,
@@ -117,17 +64,11 @@
 				"versioning" : false
 			},
 			"node": {
-				"addrs" : [
-					"127.0.0.1"
-				],
 				"port" : 9020
 			}
 		}
 	},
 	"test" : {
-		"scenario" : {
-			"file" : null
-		},
 		"step" : {
 			"limit" : {
 				"count" : 0,
@@ -139,41 +80,15 @@
 				"period" : "10s",
 				"threshold" : 0
 			},
-			"name" : null,
-			"precondition" : false
+			"name" : null
 		}
 	},
 	"version" : "3.3.0",
 	"aliasing" : [
 		{
-			"name" : "load-threads",
-			"deprecated" : true,
-			"target" : "storage-driver-concurrency"
-		},
-		{
 			"name" : "run-id",
 			"deprecated" : true,
 			"target" : "test-step-name"
-		},
-		{
-			"name" : "noop",
-			"target" : "load-type=noop"
-		},
-		{
-			"name" : "create",
-			"target" : "load-type=create"
-		},
-		{
-			"name" : "read",
-			"target" : "load-type=read"
-		},
-		{
-			"name" : "update",
-			"target" : "load-type=update"
-		},
-		{
-			"name" : "delete",
-			"target" : "load-type=delete"
 		},
 		{
 			"name" : "atmos-subtenant",
@@ -271,29 +186,9 @@
 			"target" : "storage-net-http-versioning"
 		},
 		{
-			"name" : "storage-node-addrs",
-			"deprecated" : true,
-			"target" : "storage-net-node-addrs"
-		},
-		{
 			"name" : "storage-node-port",
 			"deprecated" : true,
 			"target" : "storage-net-node-port"
-		},
-		{
-			"name" : "storage-type",
-			"deprecated" : true,
-			"target" : "storage-driver-type"
-		},
-		{
-			"name" : "storage-net-http-api",
-			"deprecated" : true,
-			"target" : "storage-driver-type"
-		},
-		{
-			"name" : "load-concurrency",
-			"deprecated" : true,
-			"target" : "storage-driver-concurrency"
 		},
 		{
 			"name" : "load-job-name",
@@ -334,11 +229,6 @@
 			"name" : "load-metrics-threshold",
 			"deprecated" : true,
 			"target" : "test-step-metrics-threshold"
-		},
-		{
-			"name" : "scenario-file",
-			"deprecated" : true,
-			"target" : "test-scenario-file"
 		},
 		{
 			"name" : "storage-auth-id",

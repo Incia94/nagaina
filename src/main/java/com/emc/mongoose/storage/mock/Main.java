@@ -5,7 +5,6 @@ import com.emc.mongoose.storage.mock.impl.http.StorageMockFactory;
 import com.emc.mongoose.ui.cli.CliArgParser;
 import com.emc.mongoose.ui.config.Config;
 import static com.emc.mongoose.ui.config.Config.ItemConfig;
-import static com.emc.mongoose.ui.config.Config.LoadConfig;
 import static com.emc.mongoose.ui.config.Config.StorageConfig;
 import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig;
 import com.emc.mongoose.ui.config.reader.jackson.ConfigParser;
@@ -38,7 +37,6 @@ public class Main {
 		}
 		config.apply(CliArgParser.parseArgs(config.getAliasingConfig(), args));
 
-		final LoadConfig loadConfig = config.getLoadConfig();
 		final StepConfig stepConfig = config.getTestConfig().getStepConfig();
 		String jobName = stepConfig.getName();
 		if(jobName == null) {
@@ -57,7 +55,7 @@ public class Main {
 		final StorageConfig storageConfig = config.getStorageConfig();
 		final ItemConfig itemConfig = config.getItemConfig();
 		final StorageMockFactory storageMockFactory = new StorageMockFactory(
-			storageConfig, loadConfig, itemConfig, stepConfig
+			storageConfig, itemConfig, stepConfig
 		);
 		if(storageConfig.getMockConfig().getNode()) {
 			try(final Daemon storageNodeMock = storageMockFactory.newStorageNodeMock()) {

@@ -61,63 +61,10 @@
 							"required": [
 								"file", "seed", "ringSize"
 							]
-						},
-						"ranges": {
-							"type" : "object",
-							"additionalProperties" : false,
-							"properties" : {
-								"fixed" : {
-									"oneOf" : [
-										{
-											"type" : "null"
-										},
-										{
-											"type" : "array",
-											"items" : {
-												"type" : "string",
-												"pattern" : "[\\d\\.]+[KMGTPE]?B?\\-?[\\d\\.]?[KMGTPE]?B?"
-											}
-										}
-									]
-								},
-								"random" : {
-									"type" : "number",
-									"minimum" : 0
-								},
-								"threshold" : {
-									"oneOf" : [
-										{
-											"type" : "integer",
-											"minimum" : 0
-										},
-										{
-											"type" : "string",
-											"pattern" : "[\\d\\.]+[KMGTPE]?B?"
-										}
-									]
-								}
-							},
-							"required" : [
-								"fixed", "random", "threshold"
-							]
-						},
-						"size": {
-							"oneOf" : [
-								{
-									"type": "integer",
-									"minimum" : 0
-								}, {
-									"type" : "string",
-									"pattern" : "[\\d\\.]+[KMGTPE]?B?"
-								}
-							]
-						},
-						"verify": {
-							"type": "boolean"
 						}
 					},
 					"required": [
-						"content", "ranges", "size", "verify"
+						"content"
 					]
 				},
 				"input": {
@@ -210,59 +157,7 @@
 				}
 			},
 			"required": [
-				"data", "input", "naming", "output", "type"
-			]
-		},
-		"load": {
-			"type": "object",
-			"additionalProperties": false,
-			"properties": {
-				"circular": {
-					"type": "boolean"
-				},
-				"generator" : {
-					"type" : "object",
-					"additionalProperties" : false,
-					"properties" : {
-						"addrs": {
-							"type": "array",
-							"items": {
-								"type" : "string"
-							}
-						},
-						"remote" : {
-							"type" : "boolean"
-						},
-						"shuffle" : {
-							"type" : "boolean"
-						}
-					},
-					"required" : [
-						"addrs", "remote", "shuffle"
-					]
-				},
-				"queue" : {
-					"type" : "object",
-					"additionalProperties" : false,
-					"properties" : {
-						"size" : {
-							"type" : "integer",
-							"minimum" : 1
-						}
-					},
-					"required" : [
-						"size"
-					]
-				},
-				"type": {
-					"type": "string",
-					"pattern" : "[NnOoPpCcRrEeAaTtDdUuLl]+=?[\\d]?%?",
-					"minLength" : 4,
-					"maxLength" : 6
-				}
-			},
-			"required": [
-				"circular", "generator", "type"
+				"data", "input", "naming", "output"
 			]
 		},
 		"storage": {
@@ -297,60 +192,6 @@
 					"required": [
 						"file", "secret", "token", "uid"
 					]
-				},
-				"driver" : {
-					"type": "object",
-					"required" : [
-						"addrs", "concurrency", "impl", "port", "remote", "type"
-					],
-					"additionalProperties" : false,
-					"properties" : {
-						"addrs" : {
-							"type" : "array",
-							"items" : {
-								"type" : "string"
-							}
-						},
-						"concurrency": {
-							"type": "integer",
-							"minimum" : 1
-						},
-						"impl" : {
-							"type" : "array",
-							"items" : {
-								"type" : "object",
-								"additionalProperties" : false,
-								"properties" : {
-									"type" : {
-										"type" : "string",
-										"pattern" : "[\\w\\d]+"
-									},
-									"file" : {
-										"type" : "string",
-										"pattern" : "[\\-_\\.\\w\\d]+"
-									},
-									"fqcn" : {
-										"type" : "string",
-										"pattern" : "([a-z][a-z_0-9]*\\.)*[A-Z_]($[A-Z_]|[\\w_])*"
-									}
-								},
-								"required" : [
-									"type", "file", "fqcn"
-								]
-							}
-						},
-						"port" : {
-							"type" : "number",
-							"minimum" : 1
-						},
-						"remote" : {
-							"type" : "boolean"
-						},
-						"type" : {
-							"type" : "string",
-							"pattern" : "[\\w\\d]+"
-						}
-					}
 				},
 				"mock": {
 					"type": "object",
@@ -486,19 +327,13 @@
 							"type" : "object",
 							"additionalProperties" : false,
 							"properties" : {
-								"addrs": {
-									"type": "array",
-									"items": {
-										"type" : "string"
-									}
-								},
 								"port" : {
 									"type" : "number",
 									"minimum" : 1
 								}
 							},
 							"required" : [
-								"addrs", "port"
+								"port"
 							]
 						}
 					},
@@ -510,34 +345,20 @@
 				}
 			},
 			"required": [
-				"auth", "driver", "mock"
+				"auth", "mock"
 			]
 		},
 		"test" : {
 			"type" : "object",
 			"required" : [
-				"scenario", "step"
+				"step"
 			],
 			"additionalProperties" : false,
 			"properties" : {
-				"scenario" : {
-					"type" : "object",
-					"required" : [
-						"file"
-					],
-					"additionalProperties" : false,
-					"properties" : {
-						"file" : {
-							"type" : [
-								"null", "string"
-							]
-						}
-					}
-				},
 				"step" : {
 					"type" : "object",
 					"required" : [
-						"limit", "metrics", "name", "precondition"
+						"limit", "metrics", "name"
 					],
 					"additionalProperties" : false,
 					"properties" : {
@@ -611,9 +432,6 @@
 							"type" : [
 								"null", "string"
 							]
-						},
-						"precondition" : {
-							"type" : "boolean"
 						}
 					}
 				}
@@ -625,7 +443,6 @@
 	},
 	"required": [
 		"item",
-		"load",
 		"storage",
 		"test",
 		"version"
