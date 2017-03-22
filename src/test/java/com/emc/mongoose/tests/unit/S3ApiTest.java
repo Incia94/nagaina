@@ -133,13 +133,11 @@ public class S3ApiTest {
 	public static Collection<Object[]> generateData() {
 		return Arrays.asList(
 			new Object[][] {
-				{ 100000, (int) SizeInBytes.toFixedSize("1KB"), },
-				{ 30000, (int) SizeInBytes.toFixedSize("10KB"), },
-				{ 10000, (int) SizeInBytes.toFixedSize("100KB"), },
-				{ 3000, (int) SizeInBytes.toFixedSize("1MB"), },
-				{ 1000, (int) SizeInBytes.toFixedSize("10MB"), },
-				{ 300, (int) SizeInBytes.toFixedSize("100MB") },
-				{ 100, (int) SizeInBytes.toFixedSize("1GB") }
+				{ 1000000, (int) SizeInBytes.toFixedSize("10KB"), },
+				{ 100000, (int) SizeInBytes.toFixedSize("100KB"), },
+				{ 10000, (int) SizeInBytes.toFixedSize("1MB"), },
+				{ 1000, (int) SizeInBytes.toFixedSize("100MB") },
+				{ 100, (int) SizeInBytes.toFixedSize("750MB") }
 			}
 		);
 	}
