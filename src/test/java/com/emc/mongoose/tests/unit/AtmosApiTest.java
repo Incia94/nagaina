@@ -5,19 +5,12 @@ import com.emc.mongoose.common.math.Random;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.impl.http.StorageMockFactory;
 import com.emc.mongoose.ui.config.Config;
-import static com.emc.mongoose.ui.config.Config.ItemConfig;
-import static com.emc.mongoose.ui.config.Config.StorageConfig;
-import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig;
 import com.emc.mongoose.ui.config.reader.jackson.ConfigParser;
 import com.emc.mongoose.ui.log.LogUtil;
 import com.emc.mongoose.ui.log.Markers;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,11 +32,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static com.emc.mongoose.ui.config.Config.ItemConfig;
+import static com.emc.mongoose.ui.config.Config.StorageConfig;
+import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 /**
  Created by kurila on 22.03.17.
  */
 @RunWith(Parameterized.class)
-public class S3ApiTest {
+public class AtmosApiTest {
 	
 	@BeforeClass
 	public static void setUpClass()
@@ -52,7 +52,6 @@ public class S3ApiTest {
 	}
 	
 	private static final Logger LOG = LogManager.getLogger();
-	private static final String BUCKET = "s3bucket";
 	private static final Config config;
 	static {
 		try {
@@ -80,7 +79,7 @@ public class S3ApiTest {
 	private final int concurrency;
 	private final List<String> objIds;
 	
-	public S3ApiTest(final int objCount, final int objSize, final int concurrency)
+	public AtmosApiTest(final int objCount, final int objSize, final int concurrency)
 	throws Exception {
 		LOG.info(
 			Markers.MSG, "Object count: {}, size: {}", objCount,
@@ -99,15 +98,6 @@ public class S3ApiTest {
 			objIds.add(Long.toString(Math.abs(rnd.nextLong()), Character.MAX_RADIX));
 		}
 		
-		final HttpURLConnection conn = (HttpURLConnection) new URL(
-			"http", "127.0.0.1", 9020, "/" + BUCKET
-		).openConnection();
-		conn.setRequestMethod("PUT");
-		LOG.info(
-			Markers.MSG, "Create bucket \"{}\" response code: {}", BUCKET, conn.getResponseCode()
-		);
-		conn.disconnect();
-		
 		final ExecutorService executor = Executors.newFixedThreadPool(concurrency);
 		final int objCountPerThread = objCount / concurrency;
 		for(int i = 0; i < concurrency; i ++) {
@@ -116,16 +106,15 @@ public class S3ApiTest {
 				int respCode;
 				HttpURLConnection conn_;
 				OutputStream out_;
-				String objId;
+				String loc;
 				try {
 					for(int j = 0; j < objCountPerThread; j ++) {
-						objId = objIds.get(objCountPerThread * i_ + j);
 						conn_ = (HttpURLConnection) new URL(
-							"http", "127.0.0.1", 9020, "/" + BUCKET + "/" + objId
+							"http", "127.0.0.1", 9020, "/rest/objects"
 						).openConnection();
 						conn_.setFixedLengthStreamingMode(objSize);
 						conn_.setDoOutput(true);
-						conn_.setRequestMethod("PUT");
+						conn_.setRequestMethod("POST");
 						out_ = conn_.getOutputStream();
 						int n = objSize / SAMPLE_DATA.length;
 						for(int k = 0; k < n; k ++) {
@@ -136,10 +125,12 @@ public class S3ApiTest {
 						out_.flush();
 						out_.close();
 						respCode = conn_.getResponseCode();
+						loc = conn_.getHeaderField("location");
+						objIds.set(objCountPerThread * i_ + j, loc.substring(loc.lastIndexOf('/') + 1));
 						if(HttpURLConnection.HTTP_OK != respCode) {
 							LOG.error(
 								Markers.ERR, "Create object \"{}\" response code: {}",
-								objId, respCode
+								loc, respCode
 							);
 						}
 						conn_.disconnect();
@@ -200,7 +191,7 @@ public class S3ApiTest {
 					for(int j = 0; j < objCountPerThread; j ++) {
 						objId = objIds.get(objCountPerThread * i_ + j);
 						conn = (HttpURLConnection) new URL(
-							"http", "127.0.0.1", 9020, "/" + BUCKET + "/" + objId
+							"http", "127.0.0.1", 9020, "/rest/objects/" + objId
 						).openConnection();
 						respCode = conn.getResponseCode();
 						assertEquals(
@@ -236,35 +227,6 @@ public class S3ApiTest {
 		if(!executor.isTerminated()) {
 			LOG.warn(Markers.ERR, "Timeout");
 			executor.shutdownNow();
-		}
-	}
-	
-	@Test
-	public final void testList()
-	throws Exception {
-		final HttpURLConnection conn = (HttpURLConnection) new URL(
-			"http", "127.0.0.1", 9020, "/" + BUCKET
-		).openConnection();
-		final int respCode = conn.getResponseCode();
-		assertEquals(
-			"Bucket listing response: " + conn.getResponseMessage(),
-			HttpURLConnection.HTTP_OK, respCode
-		);
-		final int contentLen = Integer.parseInt(
-			conn.getHeaderFields().get("content-length").get(0)
-		);
-		assertTrue("Bucket listing response content size should be > 0", contentLen > 0);
-		final byte buff[] = new byte[contentLen];
-		final InputStream in = conn.getInputStream();
-		int readByteCount = 0;
-		int n;
-		while(readByteCount < contentLen) {
-			n = in.read(buff, readByteCount, contentLen - readByteCount);
-			if(n < 0) {
-				fail("Premature end of stream");
-			} else {
-				readByteCount += n;
-			}
 		}
 	}
 }

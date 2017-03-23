@@ -5,19 +5,12 @@ import com.emc.mongoose.common.math.Random;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.impl.http.StorageMockFactory;
 import com.emc.mongoose.ui.config.Config;
-import static com.emc.mongoose.ui.config.Config.ItemConfig;
-import static com.emc.mongoose.ui.config.Config.StorageConfig;
-import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig;
 import com.emc.mongoose.ui.config.reader.jackson.ConfigParser;
 import com.emc.mongoose.ui.log.LogUtil;
 import com.emc.mongoose.ui.log.Markers;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,11 +32,18 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static com.emc.mongoose.ui.config.Config.ItemConfig;
+import static com.emc.mongoose.ui.config.Config.StorageConfig;
+import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 /**
  Created by kurila on 22.03.17.
  */
 @RunWith(Parameterized.class)
-public class S3ApiTest {
+public class SwiftApiTest {
 	
 	@BeforeClass
 	public static void setUpClass()
@@ -52,7 +52,7 @@ public class S3ApiTest {
 	}
 	
 	private static final Logger LOG = LogManager.getLogger();
-	private static final String BUCKET = "s3bucket";
+	private static final String CONTAINER = "swiftContainer";
 	private static final Config config;
 	static {
 		try {
@@ -80,7 +80,7 @@ public class S3ApiTest {
 	private final int concurrency;
 	private final List<String> objIds;
 	
-	public S3ApiTest(final int objCount, final int objSize, final int concurrency)
+	public SwiftApiTest(final int objCount, final int objSize, final int concurrency)
 	throws Exception {
 		LOG.info(
 			Markers.MSG, "Object count: {}, size: {}", objCount,
@@ -100,11 +100,11 @@ public class S3ApiTest {
 		}
 		
 		final HttpURLConnection conn = (HttpURLConnection) new URL(
-			"http", "127.0.0.1", 9020, "/" + BUCKET
+			"http", "127.0.0.1", 9020, "/" + CONTAINER
 		).openConnection();
 		conn.setRequestMethod("PUT");
 		LOG.info(
-			Markers.MSG, "Create bucket \"{}\" response code: {}", BUCKET, conn.getResponseCode()
+			Markers.MSG, "Create bucket \"{}\" response code: {}", CONTAINER, conn.getResponseCode()
 		);
 		conn.disconnect();
 		
@@ -121,7 +121,7 @@ public class S3ApiTest {
 					for(int j = 0; j < objCountPerThread; j ++) {
 						objId = objIds.get(objCountPerThread * i_ + j);
 						conn_ = (HttpURLConnection) new URL(
-							"http", "127.0.0.1", 9020, "/" + BUCKET + "/" + objId
+							"http", "127.0.0.1", 9020, "/v1/ns1/" + CONTAINER + "/" + objId
 						).openConnection();
 						conn_.setFixedLengthStreamingMode(objSize);
 						conn_.setDoOutput(true);
@@ -200,7 +200,7 @@ public class S3ApiTest {
 					for(int j = 0; j < objCountPerThread; j ++) {
 						objId = objIds.get(objCountPerThread * i_ + j);
 						conn = (HttpURLConnection) new URL(
-							"http", "127.0.0.1", 9020, "/" + BUCKET + "/" + objId
+							"http", "127.0.0.1", 9020, "/v1/ns1/" + CONTAINER + "/" + objId
 						).openConnection();
 						respCode = conn.getResponseCode();
 						assertEquals(
@@ -243,7 +243,7 @@ public class S3ApiTest {
 	public final void testList()
 	throws Exception {
 		final HttpURLConnection conn = (HttpURLConnection) new URL(
-			"http", "127.0.0.1", 9020, "/" + BUCKET
+			"http", "127.0.0.1", 9020, "/" + CONTAINER
 		).openConnection();
 		final int respCode = conn.getResponseCode();
 		assertEquals(
