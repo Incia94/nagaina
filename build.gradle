@@ -44,8 +44,9 @@ ext {
 		disruptor         : "3.3.4",
 		jackson           : "2.8.7",
 		javassist         : "3.21.0-GA",
+		slf4j             : "1.7.24",
 		log4j             : "2.8.1",
-		metrics           : "3.2.1",
+		metrics           : "3.2.2",
 		mongoose          : "[3,)",
 		netty             : "4.1.9.Final",
 	]
@@ -77,6 +78,7 @@ dependencies {
 		"commons-lang:commons-lang:${depVersion.commonsLang}",
 		"org.apache.commons:commons-collections4:${depVersion.commonsCollections}",
 		"commons-codec:commons-codec:${depVersion.commonsCodec}",
+		"org.slf4j:slf4j-api:${depVersion.slf4j}",
 		"io.dropwizard.metrics:metrics-core:${depVersion.metrics}",
 
 		"org.apache.logging.log4j:log4j-api:${depVersion.log4j}",
@@ -104,6 +106,8 @@ dependencies {
 	testCompile(
 		"junit:junit:[4,)",
 		"com.github.fge:json-schema-validator:[2,)",
+		"org.apache.logging.log4j:log4j-api:${depVersion.log4j}",
+		"org.apache.logging.log4j:log4j-core:${depVersion.log4j}",
 	)
 }
 
