@@ -111,6 +111,21 @@ dependencies {
 	)
 }
 
+test {
+	/*
+	systemProperty "com.sun.management.jmxremote", "true"
+	systemProperty "com.sun.management.jmxremote.port", "9010"
+	systemProperty "com.sun.management.jmxremote.local.only", "false"
+	systemProperty "com.sun.management.jmxremote.authenticate", "false"
+	systemProperty "com.sun.management.jmxremote.ssl", "false"
+	*/
+	testLogging {
+		events "passed", "skipped", "failed", "standardOut"
+		showExceptions = true
+		showStandardStreams = true
+	}
+}
+
 jar {
 	archiveName "$project.name.$extension"
 	manifest {
