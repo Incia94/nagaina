@@ -10,7 +10,7 @@ import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig;
 import com.emc.mongoose.ui.config.reader.jackson.ConfigParser;
 import com.emc.mongoose.ui.log.LogUtil;
 import com.emc.mongoose.ui.log.Markers;
-import static com.emc.mongoose.common.Constants.KEY_JOB_NAME;
+import static com.emc.mongoose.common.Constants.KEY_STEP_NAME;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -40,10 +40,10 @@ public class Main {
 		final StepConfig stepConfig = config.getTestConfig().getStepConfig();
 		String jobName = stepConfig.getName();
 		if(jobName == null) {
-			jobName = ThreadContext.get(KEY_JOB_NAME);
+			jobName = ThreadContext.get(KEY_STEP_NAME);
 			stepConfig.setName(jobName);
 		} else {
-			ThreadContext.put(KEY_JOB_NAME, jobName);
+			ThreadContext.put(KEY_STEP_NAME, jobName);
 		}
 		if(jobName == null) {
 			throw new AssertionError("Load job name is not set");

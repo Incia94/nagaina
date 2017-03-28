@@ -49,8 +49,8 @@ extends StorageMockBase<DataItemMock>{
 
 	private static final Logger LOG = LogManager.getLogger();
 
-	private EventLoopGroup dispatchGroup;
-	private EventLoopGroup workGroup;
+	private EventLoopGroup dispatcherGroup;
+	private EventLoopGroup workerGroup;
 	private Channel channel;
 	private final List<ChannelInboundHandler> handlers;
 
@@ -65,30 +65,34 @@ extends StorageMockBase<DataItemMock>{
 		);
 		final NetConfig netConfig = storageConfig.getNetConfig();
 		final int port = netConfig.getNodeConfig().getPort();
+		final int workerCount/*;
+		final int confWorkerCount = storageConfig.getDriverConfig().getIoConfig().getWorkers();
+		if(confWorkerCount < 1) {
+			workerCount*/ = ThreadUtil.getHardwareConcurrencyLevel();
+		/*} else {
+			workerCount = confWorkerCount;
+		}*/
+
 		this.handlers = handlers;
 
 		try {
 			if(SystemUtils.IS_OS_LINUX) {
-				dispatchGroup = new EpollEventLoopGroup(
-					ThreadUtil.getHardwareConcurrencyLevel(),
-					new NamingThreadFactory("dispatcher@port#" + port + "-", true)
+				dispatcherGroup = new EpollEventLoopGroup(
+					1, new NamingThreadFactory("dispatcher@port#" + port + "-", true)
 				);
-				workGroup = new EpollEventLoopGroup(
-					ThreadUtil.getHardwareConcurrencyLevel(),
-					new NamingThreadFactory("ioworker@port#" + port + "-", true)
+				workerGroup = new EpollEventLoopGroup(
+					workerCount, new NamingThreadFactory("ioworker@port#" + port + "-", true)
 				);
 			} else {
-				dispatchGroup = new NioEventLoopGroup(
-					ThreadUtil.getHardwareConcurrencyLevel(),
-					new NamingThreadFactory("dispatcher@port#" + port + "-", true)
+				dispatcherGroup = new NioEventLoopGroup(
+					1, new NamingThreadFactory("dispatcher@port#" + port + "-", true)
 				);
-				workGroup = new NioEventLoopGroup(
-					ThreadUtil.getHardwareConcurrencyLevel(),
-					new NamingThreadFactory("ioworker@port#" + port + "-", true)
+				workerGroup = new NioEventLoopGroup(
+					workerCount, new NamingThreadFactory("ioworker@port#" + port + "-", true)
 				);
 			}
 			final ServerBootstrap serverBootstrap = new ServerBootstrap();
-			serverBootstrap.group(dispatchGroup, workGroup)
+			serverBootstrap.group(dispatcherGroup, workerGroup)
 				.channel(
 					SystemUtils.IS_OS_LINUX ?
 					EpollServerSocketChannel.class : NioServerSocketChannel.class
@@ -140,8 +144,8 @@ extends StorageMockBase<DataItemMock>{
 	throws IOException {
 		super.doClose();
 		channel.close();
-		dispatchGroup.shutdownGracefully(1, 1, TimeUnit.SECONDS);
-		workGroup.shutdownGracefully(1, 1, TimeUnit.SECONDS);
+		dispatcherGroup.shutdownGracefully(1, 1, TimeUnit.SECONDS);
+		workerGroup.shutdownGracefully(1, 1, TimeUnit.SECONDS);
 		handlers.clear();
 	}
 
