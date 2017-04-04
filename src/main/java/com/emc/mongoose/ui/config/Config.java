@@ -214,32 +214,67 @@ implements Serializable {
 			}
 
 			public static final class ContentConfig
-			implements Serializable {
+				implements Serializable {
 
 				public static final String KEY_FILE = "file";
 				public static final String KEY_SEED = "seed";
-				public static final String KEY_RING_SIZE = "ringSize";
-				
+				public static final String KEY_RING = "ring";
+
 				public final void setFile(final String file) {
 					this.file = file;
 				}
-				
+
 				public final void setSeed(final String seed) {
 					this.seed = seed;
 				}
-				
-				public final void setRingSize(final SizeInBytes ringSize) {
-					this.ringSize = ringSize;
+
+				public final void setRingConfig(final RingConfig ringConfig) {
+					this.ringConfig = ringConfig;
 				}
-				
+
 				@JsonProperty(KEY_FILE) private String file;
 
 				@JsonProperty(KEY_SEED) private String seed;
 
-				@JsonProperty(KEY_RING_SIZE)
-				@JsonDeserialize(using = SizeInBytesDeserializer.class)
-				@JsonSerialize(using = SizeInBytesSerializer.class)
-				private SizeInBytes ringSize;
+				@JsonProperty(KEY_RING) private RingConfig ringConfig;
+
+				public static final class RingConfig
+					implements Serializable {
+
+					public static final String KEY_CACHE = "cache";
+					public static final String KEY_SIZE = "size";
+
+					@JsonProperty(KEY_CACHE) private int cache;
+
+					@JsonProperty(KEY_SIZE)
+					@JsonDeserialize(using = SizeInBytesDeserializer.class)
+					@JsonSerialize(using = SizeInBytesSerializer.class)
+					private SizeInBytes size;
+
+					public final void setCache(final int cache) {
+						this.cache = cache;
+					}
+
+					public final void setSize(final SizeInBytes size) {
+						this.size = size;
+					}
+
+					public RingConfig() {
+					}
+
+					public RingConfig(final RingConfig other) {
+						this.cache = other.getCache();
+						this.size = other.getSize();
+					}
+
+					public final int getCache() {
+						return cache;
+					}
+
+					public final SizeInBytes getSize() {
+						return size;
+					}
+				}
 
 				public ContentConfig() {
 				}
@@ -247,7 +282,7 @@ implements Serializable {
 				public ContentConfig(final ContentConfig other) {
 					this.file = other.getFile();
 					this.seed = other.getSeed();
-					this.ringSize = new SizeInBytes(other.getRingSize());
+					this.ringConfig = other.getRingConfig();
 				}
 
 				public final String getFile() {
@@ -258,8 +293,8 @@ implements Serializable {
 					return seed;
 				}
 
-				public final SizeInBytes getRingSize() {
-					return ringSize;
+				public final RingConfig getRingConfig() {
+					return ringConfig;
 				}
 			}
 

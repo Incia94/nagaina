@@ -12,7 +12,7 @@ import com.emc.mongoose.storage.mock.api.exception.ContainerMockException;
 import com.emc.mongoose.storage.mock.impl.remote.MDns;
 import com.emc.mongoose.ui.log.LogUtil;
 import com.emc.mongoose.ui.log.Markers;
-import com.emc.mongoose.ui.log.NamingThreadFactory;
+import com.emc.mongoose.model.NamingThreadFactory;
 import static com.emc.mongoose.storage.mock.impl.http.Nagaina.SVC_NAME;
 
 import org.apache.logging.log4j.Level;

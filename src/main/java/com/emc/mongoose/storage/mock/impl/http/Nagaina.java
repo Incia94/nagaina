@@ -1,7 +1,7 @@
 package com.emc.mongoose.storage.mock.impl.http;
 
 import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig;
-import com.emc.mongoose.ui.log.NamingThreadFactory;
+import com.emc.mongoose.model.NamingThreadFactory;
 import com.emc.mongoose.common.concurrent.ThreadUtil;
 import com.emc.mongoose.common.net.ssl.SslContext;
 import com.emc.mongoose.model.data.ContentSource;

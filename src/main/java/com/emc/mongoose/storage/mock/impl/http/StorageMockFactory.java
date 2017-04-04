@@ -10,6 +10,7 @@ import com.emc.mongoose.storage.mock.impl.http.request.AtmosRequestHandler;
 import com.emc.mongoose.storage.mock.impl.http.request.S3RequestHandler;
 import com.emc.mongoose.storage.mock.impl.http.request.SwiftRequestHandler;
 import static com.emc.mongoose.ui.config.Config.ItemConfig.DataConfig.ContentConfig;
+import static com.emc.mongoose.ui.config.Config.ItemConfig.DataConfig.ContentConfig.RingConfig;
 import static com.emc.mongoose.ui.config.Config.ItemConfig;
 import static com.emc.mongoose.ui.config.Config.StorageConfig;
 import static com.emc.mongoose.ui.config.Config.ItemConfig.NamingConfig;
@@ -46,8 +47,9 @@ public class StorageMockFactory {
 	throws IOException {
 		final ContentConfig contentConfig = itemConfig.getDataConfig().getContentConfig();
 		final String contentSourcePath = contentConfig.getFile();
+		final RingConfig ringConfig = contentConfig.getRingConfig();
 		final ContentSource contentSrc = ContentSourceUtil.getInstance(
-			contentSourcePath, contentConfig.getSeed(), contentConfig.getRingSize()
+			contentSourcePath, contentConfig.getSeed(), ringConfig.getSize(), ringConfig.getCache()
 		);
 		final List<ChannelInboundHandler> handlers = new ArrayList<>();
 		final StorageMock<DataItemMock> storage = new Nagaina(
@@ -74,8 +76,9 @@ public class StorageMockFactory {
 	throws IOException {
 		final ContentConfig contentConfig = itemConfig.getDataConfig().getContentConfig();
 		final String contentSourcePath = contentConfig.getFile();
+		final RingConfig ringConfig = contentConfig.getRingConfig();
 		final ContentSource contentSrc = ContentSourceUtil.getInstance(
-			contentSourcePath, contentConfig.getSeed(), contentConfig.getRingSize()
+			contentSourcePath, contentConfig.getSeed(), ringConfig.getSize(), ringConfig.getCache()
 		);
 		final List<ChannelInboundHandler> handlers = new ArrayList<>();
 		final StorageMock<DataItemMock> storage = new Nagaina(
