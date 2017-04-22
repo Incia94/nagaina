@@ -35,6 +35,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.net.ssl.SSLEngine;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -105,9 +106,9 @@ extends StorageMockBase<DataItemMock>{
 							final ChannelPipeline pipeline = socketChannel.pipeline();
 							if(netConfig.getSsl()) {
 								LOG.debug(Markers.MSG, "SSL/TLS is enabled for the channel");
-								pipeline.addLast(
-									new SslHandler(SslContext.INSTANCE.createSSLEngine())
-								);
+								final SSLEngine sslEngine = SslContext.INSTANCE.createSSLEngine();
+								sslEngine.setUseClientMode(false);
+								pipeline.addLast(new SslHandler(sslEngine));
 							}
 							pipeline.addLast(new HttpServerCodec());
 							for(final ChannelInboundHandler handler: handlers) {
