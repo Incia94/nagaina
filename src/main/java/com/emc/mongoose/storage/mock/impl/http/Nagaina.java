@@ -104,6 +104,7 @@ extends StorageMockBase<DataItemMock>{
 						throws Exception {
 							final ChannelPipeline pipeline = socketChannel.pipeline();
 							if(netConfig.getSsl()) {
+								LOG.debug(Markers.MSG, "SSL/TLS is enabled for the channel");
 								pipeline.addLast(
 									new SslHandler(SslContext.INSTANCE.createSSLEngine())
 								);
