@@ -108,6 +108,8 @@ extends StorageMockBase<DataItemMock>{
 								LOG.debug(Markers.MSG, "SSL/TLS is enabled for the channel");
 								final SSLEngine sslEngine = SslContext.INSTANCE.createSSLEngine();
 								sslEngine.setUseClientMode(false);
+								sslEngine.setNeedClientAuth(false);
+								sslEngine.setEnableSessionCreation(true);
 								pipeline.addLast(new SslHandler(sslEngine));
 							}
 							pipeline.addLast(new HttpServerCodec());
