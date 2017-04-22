@@ -37,7 +37,7 @@
 					"follow": "true",
 					"PatternLayout": {
 						"alwaysWriteExceptions" : false,
-						"pattern": "%highlight{%d{ISO8601}{GMT+0} %p{length=1} %-20.-20c{1} %-30.-30t %m%n}"
+						"pattern": "%d{ISO8601}{GMT+0} %p{length=1} %-20.-20c{1} %-30.-30t %m%n"
 					},
 					"Filters": {
 						"Filter" : [
@@ -377,64 +377,7 @@
 							}
 						]
 					}
-				},
-//				{
-//					"name" : "extResultsFile",
-//					"type": "file",
-//					"fileName": "result.xml",
-//					"bufferedIO": false,
-//					"PatternLayout": {
-//						"header": "<result>\n",
-//						"footer": "</result>\n",
-//						"pattern": "%m",
-//						"noConsoleNoAnsi": true
-//					},
-//					"Filters": {
-//						"Filter": [
-//							{
-//								"type": "MarkerFilter",
-//								"marker": "extResultsFile",
-//								"onMatch": "ACCEPT",
-//								"onMismatch": "DENY"
-//							},
-//							{
-//								"type": "ThresholdFilter",
-//								"level": "INFO",
-//								"onMatch": "ACCEPT",
-//								"onMismatch": "DENY"
-//							}
-//						]
-//					}
-//				},
-//				{
-//					"name" : "extMedResultsFile",
-//					"type": "file",
-//					"fileName": "intermediate-result.xml",
-//					"bufferedIO": false,
-//					"PatternLayout": {
-//						"header": "<intermediate-result>\n",
-//						"footer": "</intermediate-result>\n",
-//						"pattern": "%m",
-//						"noConsoleNoAnsi": true
-//					},
-//					"Filters": {
-//						"Filter": [
-//							{
-//								"type": "MarkerFilter",
-//								"marker": "extMedResultsFile",
-//								"onMatch": "ACCEPT",
-//								"onMismatch": "DENY"
-//							},
-//							{
-//								"type": "ThresholdFilter",
-//								"level": "INFO",
-//								"onMatch": "ACCEPT",
-//								"onMismatch": "DENY"
-//							}
-//						]
-//					}
-//				},
-				{
+				}, {
 					"name": "async",
 					"type": "Async",
 					"blocking": "false",
@@ -465,8 +408,6 @@
 							"ref": "cfgFile"
 						}, {
 							"ref": "partsUploadFile"
-//						}, {
-//							"ref": "extResultsFile"
 						}
 					]
 				}
