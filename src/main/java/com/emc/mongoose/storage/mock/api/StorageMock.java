@@ -20,6 +20,8 @@ extends Daemon {
 	long getSize();
 
 	long getCapacity();
+	
+	boolean sslEnabled();
 
 	boolean dropConnection();
 

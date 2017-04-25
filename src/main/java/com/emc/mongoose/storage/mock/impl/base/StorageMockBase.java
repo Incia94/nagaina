@@ -52,6 +52,7 @@ implements StorageMock<I> {
 	private final StorageIoStats ioStats;
 	protected final ContentSource contentSrc;
 	private final int storageCapacity, containerCapacity;
+	protected final boolean sslFlag;
 	private final long dropEveryConnection, missEveryResponse;
 
 	private final ListingLRUMap<String, ObjectContainerMock<I>> storageMap;
@@ -64,7 +65,7 @@ implements StorageMock<I> {
 	@SuppressWarnings("unchecked")
 	public StorageMockBase(
 		final MockConfig mockConfig, final MetricsConfig metricsConfig, final ItemConfig itemConfig,
-		final ContentSource contentSrc
+		final ContentSource contentSrc, final boolean sslFlag
 	) {
 		super();
 		final ContainerConfig containerConfig = mockConfig.getContainerConfig();
@@ -77,6 +78,7 @@ implements StorageMock<I> {
 		final FailConfig failConfig = mockConfig.getFailConfig();
 		this.dropEveryConnection = failConfig.getConnections();
 		this.missEveryResponse = failConfig.getResponses();
+		this.sslFlag = sslFlag;
 		this.defaultContainer = new BasicObjectContainerMock<>(containerCapacity);
 		storageMap.put(DEFAULT_CONTAINER_NAME, defaultContainer);
 	}
@@ -269,6 +271,11 @@ implements StorageMock<I> {
 	@Override
 	public long getCapacity() {
 		return storageCapacity;
+	}
+	
+	@Override
+	public final boolean sslEnabled() {
+		return sslFlag;
 	}
 
 	@Override

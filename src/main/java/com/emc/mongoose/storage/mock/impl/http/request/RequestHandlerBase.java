@@ -3,7 +3,7 @@ package com.emc.mongoose.storage.mock.impl.http.request;
 import com.emc.mongoose.common.api.ByteRange;
 import com.emc.mongoose.model.item.DataItem;
 import com.emc.mongoose.storage.driver.net.base.data.DataItemFileRegion;
-import com.emc.mongoose.storage.driver.net.base.data.UpdatedFullDataFileRegion;
+import com.emc.mongoose.storage.driver.net.base.data.SeekableByteChannelChunkedNioStream;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.api.StorageIoStats;
 import com.emc.mongoose.storage.mock.api.StorageMock;
@@ -24,6 +24,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.FileRegion;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -35,6 +36,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.stream.ChunkedInput;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_LENGTH;
@@ -58,6 +60,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -407,9 +410,31 @@ extends ChannelInboundHandlerAdapter {
 		HttpUtil.setContentLength(response, size);
 		ctx.write(response);
 		if(object.isUpdated()) {
-			ctx.write(new UpdatedFullDataFileRegion<>(object));
+			if(localStorage.sslEnabled()) {
+				DataItem nextRange;
+				for(int i = 0; i < DataItem.getRangeCount(object.size()); i ++) {
+					nextRange = object.slice(DataItem.getRangeOffset(i), object.getRangeSize(i));
+					if(object.isRangeUpdated(i)) {
+						nextRange.layer(nextRange.layer() + 1);
+					}
+					ctx.write(new SeekableByteChannelChunkedNioStream(nextRange));
+				}
+			} else {
+				DataItem nextRange;
+				for(int i = 0; i < DataItem.getRangeCount(object.size()); i ++) {
+					nextRange = object.slice(DataItem.getRangeOffset(i), object.getRangeSize(i));
+					if(object.isRangeUpdated(i)) {
+						nextRange.layer(nextRange.layer() + 1);
+					}
+					ctx.write(new DataItemFileRegion(nextRange));
+				}
+			}
 		} else {
-			ctx.write(new DataItemFileRegion<>(object));
+			if(localStorage.sslEnabled()) {
+				ctx.write(new SeekableByteChannelChunkedNioStream(object));
+			} else {
+				ctx.write(new DataItemFileRegion(object));
+			}
 		}
 		ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
 		ctx.channel().attr(ATTR_KEY_CTX_WRITE_FLAG).set(false);
@@ -431,73 +456,156 @@ extends ChannelInboundHandlerAdapter {
 		DataItem sliceData;
 		final long objSize = object.size();
 		final HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, OK);
-		final List<DataItemFileRegion<T>> rangesContent = new ArrayList<>(rangeHeadersValues.size());
-
-		for(final String rangeValue : rangeHeadersValues) {
-			if(rangeValue.startsWith(VALUE_RANGE_PREFIX)) {
-				ranges = rangeValue
-					.substring(VALUE_RANGE_PREFIX.length(), rangeValue.length())
-					.split(",");
-				for(final String range : ranges) {
-					
-					byteRange = new ByteRange(range);
-					beg = byteRange.getBeg();
-					end = byteRange.getEnd();
-
-					if(beg == -1) {
-						if(end == -1) {
-							setHttpResponseStatusInContext(ctx, REQUESTED_RANGE_NOT_SATISFIABLE);
-							if(LOG.isTraceEnabled(Markers.ERR)) {
-								LOG.trace(
-									Markers.ERR, "Request range not satisfiable: {}", rangeValue
+		
+		if(localStorage.sslEnabled()) {
+			
+			final List<ChunkedInput> rangesContent = new ArrayList<>(rangeHeadersValues.size());
+			
+			for(final String rangeValue : rangeHeadersValues) {
+				if(rangeValue.startsWith(VALUE_RANGE_PREFIX)) {
+					ranges = rangeValue
+						.substring(VALUE_RANGE_PREFIX.length(), rangeValue.length())
+						.split(",");
+					for(final String range : ranges) {
+						
+						byteRange = new ByteRange(range);
+						beg = byteRange.getBeg();
+						end = byteRange.getEnd();
+						
+						if(beg == -1) {
+							if(end == -1) {
+								setHttpResponseStatusInContext(
+									ctx, REQUESTED_RANGE_NOT_SATISFIABLE
 								);
+								if(LOG.isTraceEnabled(Markers.ERR)) {
+									LOG.trace(
+										Markers.ERR, "Request range not satisfiable: {}", rangeValue
+									);
+								}
+								ioStats.markRead(false, 0);
+								return;
+							} else { // final "end" bytes
+								beg = 0;
+								size = end;
 							}
-							ioStats.markRead(false, 0);
-							return;
-						} else { // final "end" bytes
-							beg = 0;
-							size = end;
-						}
-					} else {
-						if(end == -1) { // start from "beg" to the end of the object
-							size = objSize - beg;
-							end = beg + size;
-						} else { // from "beg" to "end"
-							size = end - beg + 1;
-						}
-					}
-
-					if(object.isUpdated()) {
-						while(beg <= end) {
-							cellIdx = getRangeCount(beg + 1) - 1;
-							cellOffset = getRangeOffset(cellIdx);
-							cellSize = Math.min(object.getRangeSize(cellIdx), end - cellOffset + 1);
-							sliceSize = cellSize - beg + cellOffset;
-							if(sliceSize < 1) {
-								break;
+						} else {
+							if(end == -1) { // start from "beg" to the end of the object
+								size = objSize - beg;
+								end = beg + size;
+							} else { // from "beg" to "end"
+								size = end - beg + 1;
 							}
-							sliceOffset = Math.max(beg, cellOffset);
-							sliceData = object.slice(sliceOffset, sliceSize);
-							if(object.isRangeUpdated(cellIdx)) {
-								sliceData.layer(object.layer() + 1);
-							}
-							rangesContent.add(new DataItemFileRegion(sliceData));
-							beg += sliceSize;
-							sumSize += sliceSize;
 						}
-					} else {
-						rangesContent.add(new DataItemFileRegion<>(object.slice(beg, size)));
-						sumSize += size;
+						
+						if(object.isUpdated()) {
+							while(beg <= end) {
+								cellIdx = getRangeCount(beg + 1) - 1;
+								cellOffset = getRangeOffset(cellIdx);
+								cellSize = Math.min(
+									object.getRangeSize(cellIdx), end - cellOffset + 1
+								);
+								sliceSize = cellSize - beg + cellOffset;
+								if(sliceSize < 1) {
+									break;
+								}
+								sliceOffset = Math.max(beg, cellOffset);
+								sliceData = object.slice(sliceOffset, sliceSize);
+								if(object.isRangeUpdated(cellIdx)) {
+									sliceData.layer(object.layer() + 1);
+								}
+								rangesContent.add(
+									new SeekableByteChannelChunkedNioStream(sliceData)
+								);
+								beg += sliceSize;
+								sumSize += sliceSize;
+							}
+						} else {
+							rangesContent.add(
+								new SeekableByteChannelChunkedNioStream(object.slice(beg, size))
+							);
+							sumSize += size;
+						}
 					}
 				}
 			}
+			
+			HttpUtil.setContentLength(response, sumSize);
+			ctx.write(response);
+			rangesContent.forEach(ctx::write);
+			
+		} else {
+			
+			final List<FileRegion> rangesContent = new ArrayList<>(rangeHeadersValues.size());
+			
+			for(final String rangeValue : rangeHeadersValues) {
+				if(rangeValue.startsWith(VALUE_RANGE_PREFIX)) {
+					ranges = rangeValue
+						.substring(VALUE_RANGE_PREFIX.length(), rangeValue.length())
+						.split(",");
+					for(final String range : ranges) {
+						
+						byteRange = new ByteRange(range);
+						beg = byteRange.getBeg();
+						end = byteRange.getEnd();
+	
+						if(beg == -1) {
+							if(end == -1) {
+								setHttpResponseStatusInContext(
+									ctx, REQUESTED_RANGE_NOT_SATISFIABLE
+								);
+								if(LOG.isTraceEnabled(Markers.ERR)) {
+									LOG.trace(
+										Markers.ERR, "Request range not satisfiable: {}", rangeValue
+									);
+								}
+								ioStats.markRead(false, 0);
+								return;
+							} else { // final "end" bytes
+								beg = 0;
+								size = end;
+							}
+						} else {
+							if(end == -1) { // start from "beg" to the end of the object
+								size = objSize - beg;
+								end = beg + size;
+							} else { // from "beg" to "end"
+								size = end - beg + 1;
+							}
+						}
+	
+						if(object.isUpdated()) {
+							while(beg <= end) {
+								cellIdx = getRangeCount(beg + 1) - 1;
+								cellOffset = getRangeOffset(cellIdx);
+								cellSize = Math.min(
+									object.getRangeSize(cellIdx), end - cellOffset + 1
+								);
+								sliceSize = cellSize - beg + cellOffset;
+								if(sliceSize < 1) {
+									break;
+								}
+								sliceOffset = Math.max(beg, cellOffset);
+								sliceData = object.slice(sliceOffset, sliceSize);
+								if(object.isRangeUpdated(cellIdx)) {
+									sliceData.layer(object.layer() + 1);
+								}
+								rangesContent.add(new DataItemFileRegion(sliceData));
+								beg += sliceSize;
+								sumSize += sliceSize;
+							}
+						} else {
+							rangesContent.add(new DataItemFileRegion(object.slice(beg, size)));
+							sumSize += size;
+						}
+					}
+				}
+			}
+			
+			HttpUtil.setContentLength(response, sumSize);
+			ctx.write(response);
+			rangesContent.forEach(ctx::write);
 		}
 		
-		HttpUtil.setContentLength(response, sumSize);
-		ctx.write(response);
-		for(final DataItemFileRegion<T> rangeContent : rangesContent) {
-			ctx.write(rangeContent);
-		}
 		ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
 		ctx.channel().attr(ATTR_KEY_CTX_WRITE_FLAG).set(false);
 		ioStats.markRead(true, sumSize);

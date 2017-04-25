@@ -62,7 +62,8 @@ extends StorageMockBase<DataItemMock>{
 		final List<ChannelInboundHandler> handlers
 	) {
 		super(
-			storageConfig.getMockConfig(), stepConfig.getMetricsConfig(), itemConfig, contentSource
+			storageConfig.getMockConfig(), stepConfig.getMetricsConfig(), itemConfig, contentSource,
+			storageConfig.getNetConfig().getSsl()
 		);
 		final NetConfig netConfig = storageConfig.getNetConfig();
 		final int port = netConfig.getNodeConfig().getPort();
@@ -104,7 +105,7 @@ extends StorageMockBase<DataItemMock>{
 						protected final void initChannel(final SocketChannel socketChannel)
 						throws Exception {
 							final ChannelPipeline pipeline = socketChannel.pipeline();
-							if(netConfig.getSsl()) {
+							if(sslFlag) {
 								LOG.debug(Markers.MSG, "SSL/TLS is enabled for the channel");
 								final SSLEngine sslEngine = SslContext.INSTANCE.createSSLEngine();
 								sslEngine.setUseClientMode(false);
@@ -159,5 +160,4 @@ extends StorageMockBase<DataItemMock>{
 	) {
 		return new BasicDataItemMock(id, offset, size, 0, contentSrc);
 	}
-
 }
