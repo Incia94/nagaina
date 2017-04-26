@@ -29,6 +29,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.ssl.SslHandler;
 
+import io.netty.handler.stream.ChunkedWriteHandler;
 import org.apache.commons.lang.SystemUtils;
 
 import org.apache.logging.log4j.Level;
@@ -120,6 +121,7 @@ extends StorageMockBase<DataItemMock>{
 								pipeline.addLast(new SslHandler(sslEngine));
 							}
 							pipeline.addLast(new HttpServerCodec());
+							pipeline.addLast(new ChunkedWriteHandler());
 							for(final ChannelInboundHandler handler: handlers) {
 								pipeline.addLast(handler);
 							}
