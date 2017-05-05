@@ -11,13 +11,11 @@ import com.emc.mongoose.storage.mock.api.StorageMockServer;
 import com.emc.mongoose.storage.mock.api.exception.ContainerMockException;
 import com.emc.mongoose.storage.mock.impl.remote.MDns;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
 import com.emc.mongoose.model.NamingThreadFactory;
 import static com.emc.mongoose.storage.mock.impl.http.Nagaina.SVC_NAME;
+import com.emc.mongoose.ui.log.Loggers;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
@@ -53,8 +51,6 @@ public final class BasicStorageMockClient<T extends DataItemMock>
 extends DaemonBase
 implements StorageMockClient<T> {
 
-	private static final Logger LOG = LogManager.getLogger();
-
 	private final ContentSource contentSrc;
 	private final JmDNS jmDns;
 	private final Map<String, StorageMockServer<T>>
@@ -63,10 +59,10 @@ implements StorageMockClient<T> {
 
 	public BasicStorageMockClient(final ContentSource contentSrc, final JmDNS jmDns) {
 		this.executor = new ThreadPoolExecutor(
-			ThreadUtil.getHardwareConcurrencyLevel(), ThreadUtil.getHardwareConcurrencyLevel(),
+			ThreadUtil.getHardwareThreadCount(), ThreadUtil.getHardwareThreadCount(),
 			0, TimeUnit.DAYS, new ArrayBlockingQueue<>(TaskSequencer.DEFAULT_TASK_QUEUE_SIZE_LIMIT),
 			new NamingThreadFactory("storageMockClientWorker", true),
-			(r, e) -> LOG.error("Task {} rejected", r.toString())
+			(r, e) -> Loggers.ERR.error("Task {} rejected", r.toString())
 		) {
 			@Override
 			public final Future<T> submit(final Runnable task) {
@@ -187,9 +183,9 @@ implements StorageMockClient<T> {
 				);
 				remoteNodeMap.putIfAbsent(hostAddress, mock);
 			} catch(final NotBoundException | MalformedURLException | RemoteException e) {
-				LogUtil.exception(LOG, Level.ERROR, e, "Failed to lookup node");
+				LogUtil.exception(Level.ERROR, e, "Failed to lookup node");
 			} catch(final URISyntaxException e) {
-				LOG.debug(Markers.ERR, "RMI URL syntax error {}", e);
+				Loggers.ERR.debug("RMI URL syntax error {}", e);
 			}
 		};
 		handleServiceEvent(event, c, "Node added");
@@ -198,7 +194,7 @@ implements StorageMockClient<T> {
 	private void printNodeList() {
 		final StringJoiner joiner = new StringJoiner(",");
 		remoteNodeMap.keySet().forEach(joiner::add);
-		LOG.info(Markers.MSG, "Detected nodes: " + joiner.toString());
+		Loggers.MSG.info("Detected nodes: " + joiner.toString());
 	}
 
 	private void handleServiceEvent(
@@ -210,11 +206,11 @@ implements StorageMockClient<T> {
 				try {
 					if(!address.equals(jmDns.getInetAddress())) {
 						consumer.accept(address.getHostAddress());
-						LOG.info(Markers.MSG, actionMsg + ":" + event.getName());
+						Loggers.MSG.info(actionMsg + ":" + event.getName());
 						printNodeList();
 					}
 				} catch(final IOException e) {
-					LogUtil.exception(LOG, Level.ERROR, e, "Failed to get own host address");
+					LogUtil.exception(Level.ERROR, e, "Failed to get own host address");
 				}
 			}
 		}

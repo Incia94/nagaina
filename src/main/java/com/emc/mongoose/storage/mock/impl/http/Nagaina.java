@@ -12,7 +12,7 @@ import static com.emc.mongoose.ui.config.Config.ItemConfig;
 import static com.emc.mongoose.ui.config.Config.StorageConfig;
 import static com.emc.mongoose.ui.config.Config.StorageConfig.NetConfig;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
+import com.emc.mongoose.ui.log.Loggers;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -28,13 +28,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.ssl.SslHandler;
-
 import io.netty.handler.stream.ChunkedWriteHandler;
+
 import org.apache.commons.lang.SystemUtils;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.SSLEngine;
 import java.io.IOException;
@@ -48,8 +46,6 @@ public final class Nagaina
 extends StorageMockBase<DataItemMock>{
 
 	public static final String SVC_NAME = Nagaina.class.getSimpleName().toLowerCase();
-
-	private static final Logger LOG = LogManager.getLogger();
 
 	private EventLoopGroup dispatcherGroup;
 	private EventLoopGroup workerGroup;
@@ -71,7 +67,7 @@ extends StorageMockBase<DataItemMock>{
 		final int workerCount/*;
 		final int confWorkerCount = storageConfig.getDriverConfig().getIoConfig().getWorkers();
 		if(confWorkerCount < 1) {
-			workerCount*/ = ThreadUtil.getHardwareConcurrencyLevel();
+			workerCount*/ = ThreadUtil.getHardwareThreadCount();
 		/*} else {
 			workerCount = confWorkerCount;
 		}*/
@@ -107,7 +103,7 @@ extends StorageMockBase<DataItemMock>{
 						throws Exception {
 							final ChannelPipeline pipeline = socketChannel.pipeline();
 							if(sslFlag) {
-								LOG.debug(Markers.MSG, "SSL/TLS is enabled for the channel");
+								Loggers.MSG.debug("SSL/TLS is enabled for the channel");
 								final SSLEngine sslEngine = SslContext.INSTANCE.createSSLEngine();
 								sslEngine.setEnabledProtocols(
 									new String[] { "TLSv1", "TLSv1.1", "TLSv1.2", "SSLv3" }
@@ -132,12 +128,10 @@ extends StorageMockBase<DataItemMock>{
 			bind.sync();
 			channel = bind.sync().channel();
 		} catch(final Exception e) {
-			LogUtil.exception(
-				LOG, Level.ERROR, e, "Failed to start the service at port #{}", port
-			);
+			LogUtil.exception(Level.ERROR, e, "Failed to start the service at port #{}", port);
 			throw new IllegalStateException();
 		}
-		LOG.info(Markers.MSG, "Listening the port #{}", port);
+		Loggers.MSG.info("Listening the port #{}", port);
 	}
 
 	@Override
@@ -146,7 +140,7 @@ extends StorageMockBase<DataItemMock>{
 		try {
 			channel.closeFuture().await(timeout, timeUnit); // one channel is enough
 		} catch(final InterruptedException e) {
-			LOG.info(Markers.MSG, "Interrupting the Nagaina");
+			Loggers.MSG.info("Interrupting the Nagaina");
 		}
 
 		return true;

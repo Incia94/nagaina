@@ -13,10 +13,9 @@ import com.emc.mongoose.storage.mock.api.StorageMockServer;
 import com.emc.mongoose.storage.mock.impl.base.BasicStorageMockClient;
 import com.emc.mongoose.storage.mock.impl.base.BasicStorageMockServer;
 import com.emc.mongoose.ui.log.LogUtil;
+import com.emc.mongoose.ui.log.Loggers;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.jmdns.JmDNS;
 import java.io.IOException;
@@ -30,7 +29,6 @@ public class NagainaNode
 extends DaemonBase
 implements StorageMockNode<DataItemMock> {
 
-	private static final Logger LOG = LogManager.getLogger();
 	private JmDNS jmDns;
 	private StorageMockClient<DataItemMock> client;
 	private StorageMockServer<DataItemMock> server;
@@ -41,11 +39,11 @@ implements StorageMockNode<DataItemMock> {
 		// System.setProperty("java.rmi.server.hostname", NetUtil.getHostAddrString()); workaround
 		try {
 			jmDns = JmDNS.create(NetUtil.getHostAddr());
-			LOG.info("mDNS address: " + jmDns.getInetAddress());
+			Loggers.MSG.info("mDNS address: " + jmDns.getInetAddress());
 			server = new BasicStorageMockServer<>(storage, jmDns);
 			client = new BasicStorageMockClient<>(contentSrc, jmDns);
 		} catch(final IOException | OmgDoesNotPerformException | OmgLookAtMyConsoleException e) {
-			LogUtil.exception(LOG, Level.ERROR, e, "Failed to create storage mock node");
+			LogUtil.exception(Level.ERROR, e, "Failed to create storage mock node");
 		}
 	}
 

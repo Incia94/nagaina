@@ -8,7 +8,9 @@ import com.emc.mongoose.storage.mock.api.exception.ContainerMockNotFoundExceptio
 import com.emc.mongoose.ui.config.Config.ItemConfig.NamingConfig;
 import com.emc.mongoose.ui.config.Config.TestConfig.StepConfig.LimitConfig;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
+import com.emc.mongoose.ui.log.Loggers;
+import static com.emc.mongoose.storage.mock.impl.http.request.XmlShortcuts.appendElement;
+
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,28 +22,6 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.util.Attribute;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import java.io.ByteArrayOutputStream;
-import java.rmi.RemoteException;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static com.emc.mongoose.storage.mock.impl.http.request.XmlShortcuts.appendElement;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpHeaderNames.LOCATION;
 import static io.netty.handler.codec.http.HttpMethod.GET;
@@ -54,13 +34,31 @@ import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERR
 import static io.netty.handler.codec.http.HttpResponseStatus.NOT_IMPLEMENTED;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+
+import org.apache.logging.log4j.Level;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import java.io.ByteArrayOutputStream;
+import java.rmi.RemoteException;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  Created on 12.07.16.
  */
 public class AtmosRequestHandler<T extends DataItemMock>
 extends RequestHandlerBase<T> {
 
-	private static final Logger LOG = LogManager.getLogger();
 	private static final String
 			URI_BASE_PATH = "/rest",
 			OBJ_PATH = URI_BASE_PATH + "/objects",
@@ -189,7 +187,7 @@ extends RequestHandlerBase<T> {
 				return uid.split(UID_DELIMITER)[0];
 			}
 		} else {
-			LOG.debug(Markers.MSG, "The header " + KEY_EMC_UID + " is undefined" );
+			Loggers.MSG.debug("The header " + KEY_EMC_UID + " is undefined" );
 		}
 		if(headers.contains(KEY_SUBTENANT_ID)) {
 			return headers.get(KEY_SUBTENANT_ID);
@@ -217,9 +215,8 @@ extends RequestHandlerBase<T> {
 			try {
 				maxCount = Integer.parseInt(headers.get(KEY_EMC_LIMIT));
 			} catch (final NumberFormatException e) {
-				LOG.warn(
-						Markers.ERR, "Limit header value is not a valid integer: {}",
-						headers.get(KEY_EMC_LIMIT)
+				Loggers.ERR.warn(
+					"Limit header value is not a valid integer: {}", headers.get(KEY_EMC_LIMIT)
 				);
 			}
 		}
@@ -228,9 +225,8 @@ extends RequestHandlerBase<T> {
 		T lastObject = null;
 		try {
 			lastObject = listContainer(name, objectId, buffer, maxCount);
-			if(LOG.isTraceEnabled(Markers.MSG)) {
-				LOG.trace(
-					Markers.MSG,
+			if(Loggers.MSG.isTraceEnabled()) {
+				Loggers.MSG.trace(
 					"Subtenant \"{}\": generated list of {} objects, last one is \"{}\"",
 					name, buffer.size(), lastObject
 				);
@@ -240,7 +236,7 @@ extends RequestHandlerBase<T> {
 			return;
 		} catch(final ContainerMockException e) {
 			setHttpResponseStatusInContext(ctx, INTERNAL_SERVER_ERROR);
-			LogUtil.exception(LOG, Level.WARN, e, "Subtenant \"{}\" failure", name);
+			LogUtil.exception(Level.WARN, e, "Subtenant \"{}\" failure", name);
 			return;
 		}
 		Map.Entry<String, String> header = null;
@@ -261,13 +257,13 @@ extends RequestHandlerBase<T> {
 			TRANSFORMER_FACTORY.newTransformer().transform(new DOMSource(xml), streamResult);
 		} catch (final TransformerException e) {
 			setHttpResponseStatusInContext(ctx, INTERNAL_SERVER_ERROR);
-			LogUtil.exception(LOG, Level.ERROR, e, "Failed to build subtenant XML listing");
+			LogUtil.exception(Level.ERROR, e, "Failed to build subtenant XML listing");
 			return;
 		}
-		if(LOG.isTraceEnabled(Markers.MSG)) {
-			LOG.trace(
-				Markers.MSG, "Responding the subtenant \"{}\" listing content:\n{}",
-				name, new String(stream.toByteArray())
+		if(Loggers.MSG.isTraceEnabled()) {
+			Loggers.MSG.trace(
+				"Responding the subtenant \"{}\" listing content:\n{}", name,
+				new String(stream.toByteArray())
 			);
 		}
 		final byte[] content = stream.toByteArray();

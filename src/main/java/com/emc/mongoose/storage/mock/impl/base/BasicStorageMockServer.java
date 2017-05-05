@@ -7,10 +7,9 @@ import com.emc.mongoose.storage.mock.api.StorageMockServer;
 import com.emc.mongoose.storage.mock.api.exception.ContainerMockException;
 import com.emc.mongoose.storage.mock.impl.remote.MDns;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
+import com.emc.mongoose.ui.log.Loggers;
+
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
@@ -32,8 +31,6 @@ public class BasicStorageMockServer<T extends DataItemMock>
 extends DaemonBase
 implements StorageMockServer<T> {
 
-	private static final Logger LOG = LogManager.getLogger();
-
 	private final StorageMock<T> storage;
 	private final JmDNS jmDns;
 	private ServiceInfo serviceInfo;
@@ -48,7 +45,7 @@ implements StorageMockServer<T> {
 	protected final void doStart()
 	throws IllegalStateException {
 		try {
-			LOG.info(Markers.MSG, "Register the service");
+			Loggers.MSG.info("Register the service");
 			
 			// TODO move the registry obtaining section to some kind of init
 			try {
@@ -57,9 +54,7 @@ implements StorageMockServer<T> {
 				try {
 					LocateRegistry.getRegistry(REGISTRY_PORT);
 				} catch(final RemoteException ee) {
-					LogUtil.exception(
-						LOG, Level.ERROR, ee, "Failed to obtain RMI registry"
-					);
+					LogUtil.exception(Level.ERROR, ee, "Failed to obtain RMI registry");
 				}
 			}
 			
@@ -71,11 +66,9 @@ implements StorageMockServer<T> {
 				MDns.Type.HTTP.toString(), SVC_NAME, MDns.DEFAULT_PORT, "storage mock"
 			);
 			jmDns.registerService(serviceInfo);
-			LOG.info("Storage mock was registered as service");
+			Loggers.MSG.info("Storage mock was registered as service");
 		} catch(final IOException e) {
-			LogUtil.exception(
-				LOG, Level.ERROR, e, "Failed to register as service"
-			);
+			LogUtil.exception(Level.ERROR, e, "Failed to register as service");
 		}
 		try {
 			storage.start();

@@ -20,11 +20,8 @@ import static com.emc.mongoose.ui.config.Config.StorageConfig.MockConfig.Contain
 import static com.emc.mongoose.ui.config.Config.StorageConfig.MockConfig.FailConfig;
 import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig.MetricsConfig;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
-
+import com.emc.mongoose.ui.log.Loggers;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -45,9 +42,7 @@ import java.util.concurrent.atomic.LongAdder;
 public abstract class StorageMockBase<I extends DataItemMock>
 extends DaemonBase
 implements StorageMock<I> {
-
-	private static final Logger LOG = LogManager.getLogger();
-
+	
 	private final String itemInputFile;
 	private final StorageIoStats ioStats;
 	protected final ContentSource contentSrc;
@@ -334,11 +329,11 @@ implements StorageMock<I> {
 		if(itemInputFile != null && !itemInputFile.isEmpty()) {
 			final Path itemInputFile = Paths.get(this.itemInputFile);
 			if(!Files.exists(itemInputFile)) {
-				LOG.warn(Markers.ERR, "Item input file @ \"{}\" doesn't exists", itemInputFile);
+				Loggers.ERR.warn("Item input file @ \"{}\" doesn't exists", itemInputFile);
 				return;
 			}
 			if(Files.isDirectory(itemInputFile)) {
-				LOG.warn(Markers.ERR, "Item input file @ \"{}\" is a directory", itemInputFile);
+				Loggers.ERR.warn("Item input file @ \"{}\" is a directory", itemInputFile);
 				return;
 			}
 			
@@ -349,7 +344,7 @@ implements StorageMock<I> {
 				() -> {
 					try {
 						while(true) {
-							LOG.info(Markers.MSG, "{} items loaded...", count.sum());
+							Loggers.MSG.info("{} items loaded...", count.sum());
 							TimeUnit.SECONDS.sleep(10);
 						}
 					} catch(final InterruptedException e) {
@@ -375,13 +370,10 @@ implements StorageMock<I> {
 					}
 				} while(true);
 			} catch(final EOFException e) {
-				LOG.info(
-					Markers.MSG, "Loaded {} data items from file {}", count.sum(), itemInputFile
-				);
+				Loggers.MSG.info("Loaded {} data items from file {}", count.sum(), itemInputFile);
 			} catch(final IOException | NoSuchMethodException e) {
 				LogUtil.exception(
-					LOG, Level.WARN, e, "Failed to load the data items from file \"{}\"",
-					itemInputFile
+					Level.WARN, e, "Failed to load the data items from file \"{}\"", itemInputFile
 				);
 			} finally {
 				displayProgressThread.interrupt();
@@ -397,14 +389,14 @@ implements StorageMock<I> {
 		try {
 			storageMap.clear();
 		} catch(final ConcurrentModificationException e) {
-			LogUtil.exception(LOG, Level.DEBUG, e, "Failed to clean up the storage mock");
+			LogUtil.exception(Level.DEBUG, e, "Failed to clean up the storage mock");
 		}
 		try {
 			for(final ObjectContainerMock<I> containerMock : storageMap.values()) {
 				containerMock.close();
 			}
 		} catch(final ConcurrentModificationException e) {
-			LogUtil.exception(LOG, Level.DEBUG, e, "Failed to clean up the containers");
+			LogUtil.exception(Level.DEBUG, e, "Failed to clean up the containers");
 		}
 	}
 }

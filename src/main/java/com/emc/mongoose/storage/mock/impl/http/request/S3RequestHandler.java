@@ -8,8 +8,8 @@ import com.emc.mongoose.storage.mock.api.exception.ContainerMockNotFoundExceptio
 import static com.emc.mongoose.ui.config.Config.ItemConfig.NamingConfig;
 import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig.LimitConfig;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
 import static com.emc.mongoose.storage.mock.impl.http.request.XmlShortcuts.appendElement;
+import com.emc.mongoose.ui.log.Loggers;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -23,11 +23,15 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpUtil;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
+import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
+import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -42,20 +46,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
-import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
-import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
-import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
-
 /**
  Created on 12.07.16.
  */
 public class S3RequestHandler<T extends DataItemMock>
 extends RequestHandlerBase<T> {
 
-	private static final Logger LOG = LogManager.getLogger();
 	private static final DocumentBuilder DOM_BUILDER;
 	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
 	private static final String S3_NAMESPACE_URI = "http://s3.amazonaws.com/doc/2006-03-01/";
@@ -133,7 +129,7 @@ extends RequestHandlerBase<T> {
 			TRANSFORMER_FACTORY.newTransformer().transform(new DOMSource(xml), streamResult);
 		} catch (final TransformerException e) {
 			setHttpResponseStatusInContext(ctx, INTERNAL_SERVER_ERROR);
-			LogUtil.exception(LOG, Level.ERROR, e, "Failed to build bucket XML listing");
+			LogUtil.exception(Level.ERROR, e, "Failed to build bucket XML listing");
 			return;
 		}
 		final byte[] content = stream.toByteArray();
@@ -187,8 +183,8 @@ extends RequestHandlerBase<T> {
 		T lastObject;
 		try {
 			lastObject = listContainer(name, marker, buffer, maxCount);
-			LOG.trace(
-				Markers.MSG, "Bucket \"{}\": generated list of {} objects, last one is \"{}\"",
+			Loggers.MSG.trace(
+				"Bucket \"{}\": generated list of {} objects, last one is \"{}\"",
 				name, buffer.size(), lastObject
 			);
 		} catch(final ContainerMockNotFoundException e) {
@@ -220,7 +216,7 @@ extends RequestHandlerBase<T> {
 			TRANSFORMER_FACTORY.newTransformer().transform(new DOMSource(xml), streamResult);
 		} catch (final TransformerException e) {
 			setHttpResponseStatusInContext(ctx, INTERNAL_SERVER_ERROR);
-			LogUtil.exception(LOG, Level.ERROR, e, "Failed to build bucket XML listing");
+			LogUtil.exception(Level.ERROR, e, "Failed to build bucket XML listing");
 			return;
 		}
 		final byte[] content = stream.toByteArray();

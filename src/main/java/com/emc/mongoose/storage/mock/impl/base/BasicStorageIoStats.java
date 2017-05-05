@@ -9,11 +9,9 @@ import com.emc.mongoose.model.metrics.ResumableUserTimeClock;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.api.StorageIoStats;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
+import com.emc.mongoose.ui.log.Loggers;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -21,8 +19,6 @@ import java.util.concurrent.TimeUnit;
 public final class BasicStorageIoStats
 extends Thread
 implements StorageIoStats {
-
-	private static final Logger LOG = LogManager.getLogger();
 
 	private final Counter countFailWrite, countFailRead, countFailDelete, countContainers;
 	private final CustomMeter tpWrite, tpRead, tpDelete, bwWrite, bwRead;
@@ -56,22 +52,22 @@ implements StorageIoStats {
 
 	@Override
 	public synchronized void start() {
-		LOG.debug(Markers.MSG, "Start");
+		Loggers.MSG.debug("Start");
 		super.start();
 	}
 
 	@Override
 	public void run() {
-		LOG.debug(Markers.MSG, "Running");
+		Loggers.MSG.debug("Running");
 		try {
 			while(updatePeriodSec > 0 && !isInterrupted()) {
-				LOG.info(Markers.MSG, toString());
+				Loggers.MSG.info(toString());
 				TimeUnit.SECONDS.sleep(updatePeriodSec);
 			}
 		} catch(final InterruptedException ignored) {
-			LOG.debug(Markers.MSG, "Interrupted");
+			Loggers.MSG.debug("Interrupted");
 		} catch(final Exception e) {
-			LogUtil.exception(LOG, Level.WARN, e, "Failure");
+			LogUtil.exception(Level.WARN, e, "Failure");
 		}
 	}
 

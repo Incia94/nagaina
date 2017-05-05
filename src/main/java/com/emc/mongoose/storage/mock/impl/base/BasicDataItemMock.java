@@ -3,17 +3,13 @@ package com.emc.mongoose.storage.mock.impl.base;
 import com.emc.mongoose.model.data.ContentSource;
 import com.emc.mongoose.model.item.BasicDataItem;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
-import com.emc.mongoose.ui.log.Markers;
-import static com.emc.mongoose.model.item.DataItem.getRangeCount;
+import com.emc.mongoose.ui.log.Loggers;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static com.emc.mongoose.model.item.DataItem.getRangeCount;
 
 public class BasicDataItemMock
 extends BasicDataItem
 implements DataItemMock {
-	//
-	private static final Logger LOG = LogManager.getLogger();
 	//
 	public BasicDataItemMock() {
 		super();
@@ -66,9 +62,9 @@ implements DataItemMock {
 				modifiedRangesMask.set(i);
 			}
 		}
-		if(LOG.isTraceEnabled(Markers.MSG)) {
-			LOG.trace(
-				Markers.MSG, "{}: byte range {}-{} updated, mask range {}-{} is set",
+		if(Loggers.MSG.isTraceEnabled()) {
+			Loggers.MSG.trace(
+				"{}: byte range {}-{} updated, mask range {}-{} is set",
 				name, offset, offset + size, maskIndexStart, maskIndexEnd
 			);
 		}

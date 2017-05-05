@@ -9,12 +9,10 @@ import static com.emc.mongoose.ui.config.Config.StorageConfig;
 import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig;
 import com.emc.mongoose.ui.config.reader.jackson.ConfigParser;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
+import com.emc.mongoose.ui.log.Loggers;
 import static com.emc.mongoose.common.Constants.KEY_STEP_NAME;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.io.IOException;
@@ -49,8 +47,7 @@ public class Main {
 			throw new AssertionError("Load job name is not set");
 		}
 		
-		final Logger log = LogManager.getLogger();
-		log.info(Markers.MSG, "Configuration loaded");
+		Loggers.MSG.info("Configuration loaded");
 		
 		final StorageConfig storageConfig = config.getStorageConfig();
 		final ItemConfig itemConfig = config.getItemConfig();
@@ -65,7 +62,7 @@ public class Main {
 				} catch(final InterruptedException ignored) {
 				}
 			} catch(final Exception e) {
-				LogUtil.exception(log, Level.ERROR, e, "Failed to run storage node mock");
+				LogUtil.exception(Level.ERROR, e, "Failed to run storage node mock");
 			}
 		} else {
 			try(final Daemon storageMock = storageMockFactory.newStorageMock()) {
@@ -75,7 +72,7 @@ public class Main {
 				} catch(final InterruptedException ignored) {
 				}
 			} catch(final Exception e) {
-				LogUtil.exception(log, Level.ERROR, e, "Failed to run storage mock");
+				LogUtil.exception(Level.ERROR, e, "Failed to run storage mock");
 			}
 		}
 	}

@@ -8,12 +8,14 @@ import com.emc.mongoose.storage.mock.api.exception.ContainerMockNotFoundExceptio
 import static com.emc.mongoose.ui.config.Config.ItemConfig.NamingConfig;
 import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig.LimitConfig;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
+import com.emc.mongoose.ui.log.Loggers;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,18 +24,6 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpUtil;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
-
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
@@ -45,13 +35,23 @@ import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERR
 import static io.netty.handler.codec.http.HttpResponseStatus.NO_CONTENT;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+import org.apache.commons.codec.binary.Hex;
+
+import org.apache.logging.log4j.Level;
+
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  Created on 12.07.16.
  */
 public class SwiftRequestHandler<T extends DataItemMock>
 extends RequestHandlerBase<T> {
 
-	private static final Logger LOG = LogManager.getLogger();
 	private static final ObjectMapper OBJ_MAPPER = new ObjectMapper();
 	private static final String AUTH = "auth", API_BASE_PATH_SWIFT = "v1";
 	
@@ -84,8 +84,8 @@ extends RequestHandlerBase<T> {
 		if(uriPath.startsWith(AUTH, 1)) {
 			if(method.equals(GET)) {
 				final String authToken = randomString(0x10);
-				if(LOG.isTraceEnabled(Markers.MSG)) {
-					LOG.trace(Markers.MSG, "Created auth token: {}", authToken);
+				if(Loggers.MSG.isTraceEnabled()) {
+					Loggers.MSG.trace( "Created auth token: {}", authToken);
 				}
 				response = newEmptyResponse();
 				response.headers().set(KEY_X_AUTH_TOKEN, authToken);
@@ -144,9 +144,8 @@ extends RequestHandlerBase<T> {
 		final T lastObject;
 		try {
 			lastObject = listContainer(name, marker, buffer, maxCount);
-			if(LOG.isTraceEnabled(Markers.MSG)) {
-				LOG.trace(
-					Markers.MSG,
+			if(Loggers.MSG.isTraceEnabled()) {
+				Loggers.MSG.trace(
 					"Container \"{}\": generated list of {} objects, last one is \"{}\"",
 					name, buffer.size(), lastObject
 				);
@@ -181,7 +180,7 @@ extends RequestHandlerBase<T> {
 				ctx.write(response);
 			} catch (final JsonProcessingException e) {
 				setHttpResponseStatusInContext(ctx, INTERNAL_SERVER_ERROR);
-				LogUtil.exception(LOG, Level.WARN, e, "Failed to write the json response content");
+				LogUtil.exception(Level.WARN, e, "Failed to write the json response content");
 			}
 		} else {
 			setHttpResponseStatusInContext(ctx, NO_CONTENT);

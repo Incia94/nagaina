@@ -145,7 +145,7 @@ public class SwiftApiTest {
 						conn_.disconnect();
 					}
 				} catch(final Exception e) {
-					LogUtil.exception(LOG, Level.ERROR, e, "Failure");
+					LogUtil.exception(Level.ERROR, e, "Failure");
 				}
 			};
 			executor.submit(task);
@@ -153,7 +153,7 @@ public class SwiftApiTest {
 		executor.shutdown();
 		executor.awaitTermination(5, TimeUnit.MINUTES);
 		if(!executor.isTerminated()) {
-			LOG.warn(Markers.ERR, "Timeout");
+			Loggers.ERR.warn("Timeout");
 			executor.shutdownNow();
 		}
 	}
@@ -234,7 +234,7 @@ public class SwiftApiTest {
 		executor.shutdown();
 		executor.awaitTermination(5, TimeUnit.MINUTES);
 		if(!executor.isTerminated()) {
-			LOG.warn(Markers.ERR, "Timeout");
+			Loggers.ERR.warn("Timeout");
 			executor.shutdownNow();
 		}
 	}

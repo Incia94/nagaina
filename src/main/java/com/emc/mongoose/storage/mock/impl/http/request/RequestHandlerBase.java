@@ -13,11 +13,11 @@ import com.emc.mongoose.storage.mock.api.exception.ContainerMockNotFoundExceptio
 import com.emc.mongoose.storage.mock.api.exception.ObjectMockNotFoundException;
 import com.emc.mongoose.storage.mock.api.exception.StorageMockCapacityLimitReachedException;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
 import static com.emc.mongoose.model.item.DataItem.getRangeCount;
 import static com.emc.mongoose.model.item.DataItem.getRangeOffset;
 import static com.emc.mongoose.ui.config.Config.ItemConfig.NamingConfig;
 import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig.LimitConfig;
+import com.emc.mongoose.ui.log.Loggers;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -56,9 +56,8 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -77,8 +76,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Sharable
 public abstract class RequestHandlerBase<T extends DataItemMock>
 extends ChannelInboundHandlerAdapter {
-
-	private static final Logger LOG = LogManager.getLogger();
 
 	private final double rateLimit;
 	private final AtomicInteger lastMilliDelay = new AtomicInteger(1);
@@ -184,7 +181,7 @@ extends ChannelInboundHandlerAdapter {
 		final Channel channel = ctx.channel();
 
 		if(localStorage.dropConnection()) {
-			LOG.warn(Markers.MSG, "Dropped the connection \"{}\"", channel);
+			Loggers.MSG.warn("Dropped the connection \"{}\"", channel);
 			channel.close();
 			return;
 		}
@@ -326,7 +323,7 @@ extends ChannelInboundHandlerAdapter {
 			setHttpResponseStatusInContext(ctx, INTERNAL_SERVER_ERROR);
 			ioStats.markWrite(false, 0);
 			LogUtil.exception(
-				LOG, Level.ERROR, t, "Failed to perform a range update/append for \"{}\"", id
+				Level.ERROR, t, "Failed to perform a range update/append for \"{}\"", id
 			);
 		}
 	}
@@ -349,7 +346,7 @@ extends ChannelInboundHandlerAdapter {
 					localStorage.updateObject(containerName, id, size, byteRange);
 				}
 			} else {
-				LOG.warn(Markers.ERR, "Invalid range header value: \"{}\"", rangeValues);
+				Loggers.ERR.warn("Invalid range header value: \"{}\"", rangeValues);
 				return false;
 			}
 		}
@@ -376,8 +373,8 @@ extends ChannelInboundHandlerAdapter {
 			}
 			if(object == null) {
 				setHttpResponseStatusInContext(ctx, NOT_FOUND);
-				if(LOG.isTraceEnabled(Markers.ERR)) {
-					LOG.trace(Markers.ERR, "No such container: {}", id);
+				if(Loggers.ERR.isTraceEnabled()) {
+					Loggers.ERR.trace("No such container: {}", id);
 				}
 				ioStats.markRead(false, 0);
 			} else {
@@ -392,10 +389,10 @@ extends ChannelInboundHandlerAdapter {
 			ioStats.markRead(false, 0);
 		} catch(final IOException | ContainerMockException  e) {
 			setHttpResponseStatusInContext(ctx, INTERNAL_SERVER_ERROR);
-			LogUtil.exception(LOG, Level.WARN, e, "Container \"{}\" failure", containerName);
+			LogUtil.exception(Level.WARN, e, "Container \"{}\" failure", containerName);
 			ioStats.markRead(false, 0);
 		} catch(final InterruptedException | ExecutionException e) {
-			LogUtil.exception(LOG, Level.WARN, e, "Remote call failure", containerName);
+			LogUtil.exception(Level.WARN, e, "Remote call failure", containerName);
 		}
 	}
 
@@ -438,8 +435,8 @@ extends ChannelInboundHandlerAdapter {
 		ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
 		ctx.channel().attr(ATTR_KEY_CTX_WRITE_FLAG).set(false);
 		ioStats.markRead(true, size);
-		if(LOG.isTraceEnabled(Markers.MSG)) {
-			LOG.trace(Markers.MSG, "Send data object with ID {}", object.getName());
+		if(Loggers.MSG.isTraceEnabled()) {
+			Loggers.MSG.trace("Send data object with ID {}", object.getName());
 		}
 	}
 
@@ -476,9 +473,9 @@ extends ChannelInboundHandlerAdapter {
 								setHttpResponseStatusInContext(
 									ctx, REQUESTED_RANGE_NOT_SATISFIABLE
 								);
-								if(LOG.isTraceEnabled(Markers.ERR)) {
-									LOG.trace(
-										Markers.ERR, "Request range not satisfiable: {}", rangeValue
+								if(Loggers.ERR.isTraceEnabled()) {
+									Loggers.ERR.trace(
+										"Request range not satisfiable: {}", rangeValue
 									);
 								}
 								ioStats.markRead(false, 0);
@@ -552,9 +549,9 @@ extends ChannelInboundHandlerAdapter {
 								setHttpResponseStatusInContext(
 									ctx, REQUESTED_RANGE_NOT_SATISFIABLE
 								);
-								if(LOG.isTraceEnabled(Markers.ERR)) {
-									LOG.trace(
-										Markers.ERR, "Request range not satisfiable: {}", rangeValue
+								if(Loggers.ERR.isTraceEnabled()) {
+									Loggers.ERR.trace(
+										"Request range not satisfiable: {}", rangeValue
 									);
 								}
 								ioStats.markRead(false, 0);
@@ -608,8 +605,8 @@ extends ChannelInboundHandlerAdapter {
 		ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
 		ctx.channel().attr(ATTR_KEY_CTX_WRITE_FLAG).set(false);
 		ioStats.markRead(true, sumSize);
-		if(LOG.isTraceEnabled(Markers.MSG)) {
-			LOG.trace(Markers.MSG, "Partially sent the data object with ID {}", object.getName());
+		if(Loggers.MSG.isTraceEnabled()) {
+			Loggers.MSG.trace("Partially sent the data object with ID {}", object.getName());
 		}
 	}
 
@@ -619,15 +616,15 @@ extends ChannelInboundHandlerAdapter {
 	) {
 		try {
 			localStorage.deleteObject(containerName, id, offset, -1);
-			if(LOG.isTraceEnabled(Markers.MSG)) {
-				LOG.trace(Markers.MSG, "Delete data object with ID: {}", id);
+			if(Loggers.MSG.isTraceEnabled()) {
+				Loggers.MSG.trace( "Delete data object with ID: {}", id);
 			}
 			ioStats.markDelete(true);
 		} catch (final ContainerMockNotFoundException e) {
 			ioStats.markDelete(false);
 			setHttpResponseStatusInContext(ctx, NOT_FOUND);
-			if(LOG.isTraceEnabled(Markers.MSG)) {
-				LOG.trace(Markers.ERR, "No such container: {}", id);
+			if(Loggers.ERR.isTraceEnabled()) {
+				Loggers.ERR.trace("No such container: {}", id);
 			}
 		}
 	}
@@ -666,9 +663,9 @@ extends ChannelInboundHandlerAdapter {
 	)
 	throws ContainerMockException {
 		final T lastObject = localStorage.listObjects(name, marker, buffer, maxCount);
-		if(LOG.isTraceEnabled(Markers.MSG)) {
-			LOG.trace(
-				Markers.MSG, "Container \"{}\": generated list of {} objects, last one is \"{}\"",
+		if(Loggers.MSG.isTraceEnabled()) {
+			Loggers.MSG.trace(
+				"Container \"{}\": generated list of {} objects, last one is \"{}\"",
 				name, buffer.size(), lastObject
 			);
 		}
@@ -688,7 +685,7 @@ extends ChannelInboundHandlerAdapter {
 	@Override
 	public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause)
 	throws Exception {
-		LogUtil.exception(LOG, Level.DEBUG, cause, "Handler was interrupted");
+		LogUtil.exception(Level.DEBUG, cause, "Handler was interrupted");
 		ctx.close();
 	}
 	
