@@ -10,10 +10,8 @@ import static com.emc.mongoose.ui.config.Config.StorageConfig;
 import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig;
 import com.emc.mongoose.ui.config.reader.jackson.ConfigParser;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
+import com.emc.mongoose.ui.log.Loggers;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -51,7 +49,6 @@ public class S3ApiTest {
 		LogUtil.init();
 	}
 	
-	private static final Logger LOG = LogManager.getLogger();
 	private static final String BUCKET = "s3bucket";
 	private static final Config config;
 	static {
@@ -82,10 +79,7 @@ public class S3ApiTest {
 	
 	public S3ApiTest(final int objCount, final int objSize, final int concurrency)
 	throws Exception {
-		LOG.info(
-			Markers.MSG, "Object count: {}, size: {}", objCount,
-			SizeInBytes.formatFixedSize(objSize)
-		);
+		Loggers.MSG.info("Object count: {}, size: {}", objCount, SizeInBytes.formatFixedSize(objSize));
 		this.objCount = objCount;
 		this.objSize = objSize;
 		this.concurrency = concurrency;
@@ -103,9 +97,7 @@ public class S3ApiTest {
 			"http", "127.0.0.1", 9020, "/" + BUCKET
 		).openConnection();
 		conn.setRequestMethod("PUT");
-		LOG.info(
-			Markers.MSG, "Create bucket \"{}\" response code: {}", BUCKET, conn.getResponseCode()
-		);
+		Loggers.MSG.info("Create bucket \"{}\" response code: {}", BUCKET, conn.getResponseCode());
 		conn.disconnect();
 		
 		final ExecutorService executor = Executors.newFixedThreadPool(concurrency);
@@ -137,10 +129,7 @@ public class S3ApiTest {
 						out_.close();
 						respCode = conn_.getResponseCode();
 						if(HttpURLConnection.HTTP_OK != respCode) {
-							LOG.error(
-								Markers.ERR, "Create object \"{}\" response code: {}",
-								objId, respCode
-							);
+							Loggers.ERR.error("Create object \"{}\" response code: {}", objId, respCode);
 						}
 						conn_.disconnect();
 					}

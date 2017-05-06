@@ -7,10 +7,10 @@ import com.emc.mongoose.storage.mock.impl.http.StorageMockFactory;
 import com.emc.mongoose.ui.config.Config;
 import com.emc.mongoose.ui.config.reader.jackson.ConfigParser;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
+import com.emc.mongoose.ui.log.Loggers;
+
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -51,7 +51,6 @@ public class SwiftApiTest {
 		LogUtil.init();
 	}
 	
-	private static final Logger LOG = LogManager.getLogger();
 	private static final String CONTAINER = "swiftContainer";
 	private static final Config config;
 	static {
@@ -82,10 +81,7 @@ public class SwiftApiTest {
 	
 	public SwiftApiTest(final int objCount, final int objSize, final int concurrency)
 	throws Exception {
-		LOG.info(
-			Markers.MSG, "Object count: {}, size: {}", objCount,
-			SizeInBytes.formatFixedSize(objSize)
-		);
+		Loggers.MSG.info("Object count: {}, size: {}", objCount, SizeInBytes.formatFixedSize(objSize));
 		this.objCount = objCount;
 		this.objSize = objSize;
 		this.concurrency = concurrency;
@@ -103,9 +99,7 @@ public class SwiftApiTest {
 			"http", "127.0.0.1", 9020, "/" + CONTAINER
 		).openConnection();
 		conn.setRequestMethod("PUT");
-		LOG.info(
-			Markers.MSG, "Create bucket \"{}\" response code: {}", CONTAINER, conn.getResponseCode()
-		);
+		Loggers.MSG.info("Create bucket \"{}\" response code: {}", CONTAINER, conn.getResponseCode());
 		conn.disconnect();
 		
 		final ExecutorService executor = Executors.newFixedThreadPool(concurrency);
@@ -137,10 +131,7 @@ public class SwiftApiTest {
 						out_.close();
 						respCode = conn_.getResponseCode();
 						if(HttpURLConnection.HTTP_OK != respCode) {
-							LOG.error(
-								Markers.ERR, "Create object \"{}\" response code: {}",
-								objId, respCode
-							);
+							Loggers.ERR.error("Create object \"{}\" response code: {}", objId, respCode);
 						}
 						conn_.disconnect();
 					}

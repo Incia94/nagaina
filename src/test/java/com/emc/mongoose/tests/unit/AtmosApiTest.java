@@ -7,10 +7,8 @@ import com.emc.mongoose.storage.mock.impl.http.StorageMockFactory;
 import com.emc.mongoose.ui.config.Config;
 import com.emc.mongoose.ui.config.reader.jackson.ConfigParser;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.ui.log.Markers;
+import com.emc.mongoose.ui.log.Loggers;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -51,7 +49,6 @@ public class AtmosApiTest {
 		LogUtil.init();
 	}
 	
-	private static final Logger LOG = LogManager.getLogger();
 	private static final Config config;
 	static {
 		try {
@@ -81,10 +78,7 @@ public class AtmosApiTest {
 	
 	public AtmosApiTest(final int objCount, final int objSize, final int concurrency)
 	throws Exception {
-		LOG.info(
-			Markers.MSG, "Object count: {}, size: {}", objCount,
-			SizeInBytes.formatFixedSize(objSize)
-		);
+		Loggers.MSG.info("Object count: {}, size: {}", objCount, SizeInBytes.formatFixedSize(objSize));
 		this.objCount = objCount;
 		this.objSize = objSize;
 		this.concurrency = concurrency;
@@ -128,10 +122,7 @@ public class AtmosApiTest {
 						loc = conn_.getHeaderField("location");
 						objIds.set(objCountPerThread * i_ + j, loc.substring(loc.lastIndexOf('/') + 1));
 						if(HttpURLConnection.HTTP_OK != respCode) {
-							LOG.error(
-								Markers.ERR, "Create object \"{}\" response code: {}",
-								loc, respCode
-							);
+							Loggers.ERR.error("Create object \"{}\" response code: {}", loc, respCode);
 						}
 						conn_.disconnect();
 					}
