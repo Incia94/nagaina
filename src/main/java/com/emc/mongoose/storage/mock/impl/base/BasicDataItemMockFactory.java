@@ -1,6 +1,5 @@
 package com.emc.mongoose.storage.mock.impl.base;
 
-import com.emc.mongoose.model.data.ContentSource;
 import com.emc.mongoose.model.item.BasicDataItemFactory;
 import com.emc.mongoose.model.item.DataItemFactory;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
@@ -12,18 +11,14 @@ public class BasicDataItemMockFactory<I extends DataItemMock>
 extends BasicDataItemFactory<I>
 implements DataItemFactory<I> {
 	
-	public BasicDataItemMockFactory(final ContentSource contentSrc) {
-		super(contentSrc);
-	}
-	
 	@Override
 	public final I getItem(final String name, final long id, final long size) {
-		return (I) new BasicDataItemMock(name, id, size, getContentSource());
+		return (I) new BasicDataItemMock(name, id, size);
 	}
 	
 	@Override
 	public final I getItem(final String line) {
-		return (I) new BasicDataItemMock(line, getContentSource());
+		return (I) new BasicDataItemMock(line);
 	}
 	
 	@Override

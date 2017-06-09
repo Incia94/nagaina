@@ -21,6 +21,7 @@ import static com.emc.mongoose.ui.config.Config.StorageConfig.MockConfig.FailCon
 import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig.MetricsConfig;
 import com.emc.mongoose.ui.log.LogUtil;
 import com.emc.mongoose.ui.log.Loggers;
+
 import org.apache.logging.log4j.Level;
 
 import java.io.EOFException;
@@ -180,7 +181,9 @@ implements StorageMock<I> {
 		// TODO partial read using offset and size args
 		final ObjectContainerMock<I> c = getContainer(containerName);
 		if(c != null) {
-			return c.get(id);
+			final I obj = c.get(id);
+			obj.setContentSrc(contentSrc);
+			return obj;
 		} else {
 			throw new ContainerMockNotFoundException(containerName);
 		}
@@ -352,12 +355,8 @@ implements StorageMock<I> {
 				}
 			);
 			
-			final ItemFactory<I> itemFactory = new BasicDataItemMockFactory<>(contentSrc);
-			try(
-				final CsvFileItemInput<I> csvFileItemInput = new CsvFileItemInput<>(
-					itemInputFile, itemFactory
-				)
-			) {
+			final ItemFactory<I> itemFactory = new BasicDataItemMockFactory<>();
+			try(final CsvFileItemInput<I> csvFileItemInput = new CsvFileItemInput<>(itemInputFile, itemFactory)) {
 				displayProgressThread.start();
 				do {
 					buff = new ArrayList<>(4096);

@@ -1,6 +1,5 @@
 package com.emc.mongoose.storage.mock.impl.base;
 
-import com.emc.mongoose.model.data.ContentSource;
 import com.emc.mongoose.model.item.BasicDataItem;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.ui.log.Loggers;
@@ -15,27 +14,20 @@ implements DataItemMock {
 		super();
 	}
 	//
-	public BasicDataItemMock(final String value, final ContentSource contentSrc) {
-		super(value, contentSrc);
+	public BasicDataItemMock(final String value) {
+		super(value);
 	}
 	//
-	public BasicDataItemMock(
-		final long offset, final long size, final ContentSource contentSrc
-	) {
-		super(offset, size, contentSrc);
+	public BasicDataItemMock(final long offset, final long size) {
+		super(offset, size);
 	}
 	//
-	public BasicDataItemMock(
-		final String name, final long offset, final long size, final ContentSource contentSrc
-	) {
-		super(name, offset, size, contentSrc);
+	public BasicDataItemMock(final String name, final long offset, final long size) {
+		super(name, offset, size);
 	}
 	//
-	public BasicDataItemMock(
-		final String name, final long offset, final long size, final int layerNum,
-		final ContentSource contentSrc
-	) {
-		super(name, offset, size, layerNum, contentSrc);
+	public BasicDataItemMock(final String name, final long offset, final long size, final int layerNum) {
+		super(name, offset, size, layerNum);
 	}
 	//
 	public final synchronized void update(final long offset, final long size)

@@ -157,9 +157,7 @@ extends StorageMockBase<DataItemMock>{
 	}
 
 	@Override
-	protected DataItemMock newDataObject(
-		final String id, final long offset, final long size
-	) {
-		return new BasicDataItemMock(id, offset, size, 0, contentSrc);
+	protected DataItemMock newDataObject(final String id, final long offset, final long size) {
+		return new BasicDataItemMock(id, offset, size, 0);
 	}
 }
