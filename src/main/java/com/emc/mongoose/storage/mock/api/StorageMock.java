@@ -20,6 +20,8 @@ extends Daemon {
 	long getSize();
 
 	long getCapacity();
+
+	int getPort();
 	
 	boolean sslEnabled();
 
@@ -48,14 +50,13 @@ extends Daemon {
 	void deleteObject(
 		final String containerName, final String id, final long offset, final long size
 	) throws ContainerMockNotFoundException;
-	//
+
 	void updateObject(
 		final String containerName, final String id, final long size, final ByteRange byteRange
 	) throws ContainerMockException, ObjectMockNotFoundException;
-	//
+
 	T listObjects(
 		final String containerName, final String marker,
 		final Collection<T> outputBuffer, final int maxCount
 	) throws ContainerMockException;
-
 }

@@ -12,7 +12,7 @@ import com.emc.mongoose.storage.mock.api.exception.ContainerMockException;
 import com.emc.mongoose.storage.mock.impl.remote.MDns;
 import com.emc.mongoose.ui.log.LogUtil;
 import com.emc.mongoose.model.NamingThreadFactory;
-import static com.emc.mongoose.storage.mock.impl.http.Nagaina.SVC_NAME;
+import static com.emc.mongoose.storage.mock.impl.http.WeightlessHttpStorageMock.SVC_NAME;
 import com.emc.mongoose.ui.log.Loggers;
 
 import org.apache.logging.log4j.Level;
@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Level;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -30,7 +31,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -53,8 +53,7 @@ implements StorageMockClient<T> {
 
 	private final ContentSource contentSrc;
 	private final JmDNS jmDns;
-	private final Map<String, StorageMockServer<T>>
-		remoteNodeMap = new ConcurrentHashMap<>();
+	private final Map<URI, StorageMockServer<T>> remoteNodeMap = new ConcurrentHashMap<>();
 	private final ExecutorService executor;
 
 	public BasicStorageMockClient(final ContentSource contentSrc, final JmDNS jmDns) {
@@ -170,18 +169,15 @@ implements StorageMockClient<T> {
 		handleServiceEvent(event, remoteNodeMap::remove, "Node removed");
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
+	@Override @SuppressWarnings("unchecked")
 	public void serviceResolved(final ServiceEvent event) {
 		final Consumer<String> c = hostAddress -> {
 			try {
 				final URI rmiUrl = new URI(
 					"rmi", null, hostAddress, REGISTRY_PORT, "/" + SVC_NAME, null, null
 				);
-				final StorageMockServer<T> mock = (StorageMockServer<T>) Naming.lookup(
-					rmiUrl.toString()
-				);
-				remoteNodeMap.putIfAbsent(hostAddress, mock);
+				final StorageMockServer<T> mock = (StorageMockServer<T>) Naming.lookup(rmiUrl.toString());
+				remoteNodeMap.putIfAbsent(rmiUrl, mock);
 			} catch(final NotBoundException | MalformedURLException | RemoteException e) {
 				LogUtil.exception(Level.ERROR, e, "Failed to lookup node");
 			} catch(final URISyntaxException e) {
@@ -191,29 +187,15 @@ implements StorageMockClient<T> {
 		handleServiceEvent(event, c, "Node added");
 	}
 
-	private void printNodeList() {
-		final StringJoiner joiner = new StringJoiner(",");
-		remoteNodeMap.keySet().forEach(joiner::add);
-		Loggers.MSG.info("Detected nodes: " + joiner.toString());
-	}
-
 	private void handleServiceEvent(
 		final ServiceEvent event, final Consumer<String> consumer, final String actionMsg
 	) {
 		final ServiceInfo eventInfo = event.getInfo();
-		if(eventInfo.getQualifiedName().contains(SVC_NAME)) {
-			for (final InetAddress address: eventInfo.getInet4Addresses()) {
-				try {
-					if(!address.equals(jmDns.getInetAddress())) {
-						consumer.accept(address.getHostAddress());
-						Loggers.MSG.info(actionMsg + ":" + event.getName());
-						printNodeList();
-					}
-				} catch(final IOException e) {
-					LogUtil.exception(Level.ERROR, e, "Failed to get own host address");
-				}
+		final String evtSvcName = eventInfo.getQualifiedName();
+		if(evtSvcName.startsWith(SVC_NAME)) {
+			for(final InetAddress address: eventInfo.getInet4Addresses()) {
+				consumer.accept(address.getHostAddress());
 			}
 		}
 	}
-
 }

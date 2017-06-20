@@ -10,12 +10,12 @@ import java.util.Collection;
 /**
  Created on 20.07.16.
  */
-public final class BasicObjectContainerMock<T extends DataItemMock>
+public final class WeightlessObjectContainerMock<T extends DataItemMock>
 implements ObjectContainerMock<T> {
 
 	private final ListingLRUMap<String, T> containerMap;
 
-	public BasicObjectContainerMock(final int capacity) {
+	public WeightlessObjectContainerMock(final int capacity) {
 		this.containerMap = new ListingLRUMap<String, T>(capacity) {
 			@Override @SuppressWarnings("unchecked")
 			protected final boolean removeLRU(final LinkEntry entry) {

@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 /**
  Created on 09.09.16.
  */
-public class NagainaNode
+public class BasicStorageMockNode
 extends DaemonBase
 implements StorageMockNode<DataItemMock> {
 
@@ -33,9 +33,7 @@ implements StorageMockNode<DataItemMock> {
 	private StorageMockClient<DataItemMock> client;
 	private StorageMockServer<DataItemMock> server;
 
-	public NagainaNode(
-		final StorageMock<DataItemMock> storage, final ContentSource contentSrc
-	) {
+	public BasicStorageMockNode(final StorageMock<DataItemMock> storage, final ContentSource contentSrc) {
 		// System.setProperty("java.rmi.server.hostname", NetUtil.getHostAddrString()); workaround
 		try {
 			jmDns = JmDNS.create(NetUtil.getHostAddr());

@@ -42,28 +42,30 @@ import java.util.concurrent.TimeUnit;
 /**
  Created on 11.07.16.
  */
-public final class Nagaina
+public final class WeightlessHttpStorageMock
 extends StorageMockBase<DataItemMock>{
 
-	public static final String SVC_NAME = Nagaina.class.getSimpleName().toLowerCase();
+	public static final String SVC_NAME = WeightlessHttpStorageMock.class.getSimpleName().toLowerCase();
 
 	private EventLoopGroup dispatcherGroup;
 	private EventLoopGroup workerGroup;
 	private Channel channel;
 	private final List<ChannelInboundHandler> handlers;
+	private final int port;
+	private final boolean sslFlag;
 
 	@SuppressWarnings("ConstantConditions")
-	public Nagaina(
+	public WeightlessHttpStorageMock(
 		final StorageConfig storageConfig, final ItemConfig itemConfig,
 		final StepConfig stepConfig, final ContentSource contentSource,
 		final List<ChannelInboundHandler> handlers
 	) {
 		super(
-			storageConfig.getMockConfig(), stepConfig.getMetricsConfig(), itemConfig, contentSource,
-			storageConfig.getNetConfig().getSsl()
+			storageConfig.getMockConfig(), stepConfig.getMetricsConfig(), itemConfig, contentSource
 		);
 		final NetConfig netConfig = storageConfig.getNetConfig();
-		final int port = netConfig.getNodeConfig().getPort();
+		port = netConfig.getNodeConfig().getPort();
+		sslFlag = storageConfig.getNetConfig().getSsl();
 		final int workerCount/*;
 		final int confWorkerCount = storageConfig.getDriverConfig().getIoConfig().getWorkers();
 		if(confWorkerCount < 1) {
@@ -132,6 +134,16 @@ extends StorageMockBase<DataItemMock>{
 			throw new IllegalStateException();
 		}
 		Loggers.MSG.info("Listening the port #{}", port);
+	}
+
+	@Override
+	public final int getPort() {
+		return port;
+	}
+
+	@Override
+	public final boolean sslEnabled() {
+		return sslFlag;
 	}
 
 	@Override

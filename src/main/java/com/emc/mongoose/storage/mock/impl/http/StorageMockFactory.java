@@ -52,10 +52,10 @@ public class StorageMockFactory {
 			contentSourcePath, contentConfig.getSeed(), ringConfig.getSize(), ringConfig.getCache()
 		);
 		final List<ChannelInboundHandler> handlers = new ArrayList<>();
-		final StorageMock<DataItemMock> storage = new Nagaina(
+		final StorageMock<DataItemMock> storage = new WeightlessHttpStorageMock(
 			storageConfig, itemConfig, stepConfig, contentSrc, handlers
 		);
-		final StorageMockNode<DataItemMock> storageMockNode = new NagainaNode(
+		final StorageMockNode<DataItemMock> storageMockNode = new BasicStorageMockNode(
 			storage, contentSrc
 		);
 		final StorageMockClient<DataItemMock> client = storageMockNode.client();
@@ -81,7 +81,7 @@ public class StorageMockFactory {
 			contentSourcePath, contentConfig.getSeed(), ringConfig.getSize(), ringConfig.getCache()
 		);
 		final List<ChannelInboundHandler> handlers = new ArrayList<>();
-		final StorageMock<DataItemMock> storage = new Nagaina(
+		final StorageMock<DataItemMock> storage = new WeightlessHttpStorageMock(
 			storageConfig, itemConfig, stepConfig, contentSrc, handlers
 		);
 		final LimitConfig limitConfig = stepConfig.getLimitConfig();
