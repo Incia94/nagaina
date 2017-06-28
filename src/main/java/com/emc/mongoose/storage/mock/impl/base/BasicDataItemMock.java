@@ -1,10 +1,10 @@
 package com.emc.mongoose.storage.mock.impl.base;
 
 import com.emc.mongoose.model.item.BasicDataItem;
+import static com.emc.mongoose.model.item.DataItem.getRangeCount;
+import static com.emc.mongoose.model.item.DataItem.getRangeOffset;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.ui.log.Loggers;
-
-import static com.emc.mongoose.model.item.DataItem.getRangeCount;
 
 public class BasicDataItemMock
 extends BasicDataItem
@@ -30,6 +30,7 @@ implements DataItemMock {
 		super(name, offset, size, layerNum);
 	}
 	//
+	@Override
 	public final synchronized void update(final long offset, final long size)
 	throws IllegalArgumentException, IllegalStateException {
 		if(size < 0) {
@@ -37,9 +38,17 @@ implements DataItemMock {
 		}
 		final int
 			countRangesTotal = getRangeCount(this.size),
-			maskIndexStart = getRangeCount(offset),
-			maskIndexEnd = getRangeCount(offset + size);
-		for(int i = maskIndexStart; i < maskIndexEnd; i ++) {
+			cellIndexStart = getRangeCount(offset),
+			cellIndexEnd = getRangeCount(offset + size);
+		// check if offset is equal to the cell offset
+		if(offset != getRangeOffset(cellIndexStart)) {
+			return;
+		}
+		// check if the range end is at end of the item either end is equal to a cell end
+		if(offset + size != this.size && offset + size != getRangeOffset(cellIndexEnd)) {
+			return;
+		}
+		for(int i = cellIndexStart; i < cellIndexEnd; i ++) {
 			if(countRangesTotal > 0 && countRangesTotal == modifiedRangesMask.cardinality()) {
 				// mask is full, switch to the next layer
 				layerNum ++;
@@ -57,11 +66,12 @@ implements DataItemMock {
 		if(Loggers.MSG.isTraceEnabled()) {
 			Loggers.MSG.trace(
 				"{}: byte range {}-{} updated, mask range {}-{} is set",
-				name, offset, offset + size, maskIndexStart, maskIndexEnd
+				name, offset, offset + size, cellIndexStart, cellIndexEnd
 			);
 		}
 	}
 	//
+	@Override
 	public final synchronized void append(final long size) {
 		if(size < 0) {
 			throw new IllegalArgumentException(name + ": range size should not be negative");

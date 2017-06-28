@@ -7,7 +7,12 @@ import com.emc.mongoose.model.item.DataItem;
  */
 public interface DataItemMock
 extends DataItem {
-
+	
+	/**
+	 Marks the range as updated only if its boundaries are fit the masked cell
+	 @param offset
+	 @param size
+	 */
 	void update(final long offset, final long size);
 
 	void append(final long size);

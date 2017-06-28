@@ -144,10 +144,11 @@ implements StorageMock<I> {
 								} else {
 									throw new AssertionError();
 								}
-							} else if(rangeBeg == baseObjSize){
+							} else if(rangeBeg == baseObjSize) {
 								obj.append(size);
 							} else {
-								obj.update(rangeBeg, baseObjSize - rangeBeg);
+								// rewrite the range with same data
+								// so do nothing here
 							}
 						} else if(rangeEnd > -1) {
 							obj.update(baseObjSize - rangeEnd, baseObjSize);
