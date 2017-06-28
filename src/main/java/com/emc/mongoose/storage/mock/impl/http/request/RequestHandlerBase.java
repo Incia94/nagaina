@@ -15,8 +15,6 @@ import com.emc.mongoose.storage.mock.api.exception.StorageMockCapacityLimitReach
 import com.emc.mongoose.ui.log.LogUtil;
 import static com.emc.mongoose.model.item.DataItem.getRangeCount;
 import static com.emc.mongoose.model.item.DataItem.getRangeOffset;
-import static com.emc.mongoose.ui.config.Config.ItemConfig.NamingConfig;
-import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig.LimitConfig;
 import com.emc.mongoose.ui.log.Loggers;
 
 import io.netty.buffer.Unpooled;
@@ -102,13 +100,12 @@ extends ChannelInboundHandlerAdapter {
 	protected static final String MARKER_KEY = "marker";
 
 	protected RequestHandlerBase(
-		final LimitConfig limitConfig, final NamingConfig namingConfig,
-		final StorageMock<T> localStorage, final StorageMockClient<T> remoteStorage
+		final float rateLimit, final String prefix, final int idRadix, final StorageMock<T> localStorage,
+	    final StorageMockClient<T> remoteStorage
 	) throws RemoteException {
-		this.rateLimit = limitConfig.getRate();
-		final String t = namingConfig.getPrefix();
-		this.prefixLength = t == null ? 0 : t.length();
-		this.idRadix = namingConfig.getRadix();
+		this.rateLimit = rateLimit;
+		this.prefixLength = prefix == null ? 0 : prefix.length();
+		this.idRadix = idRadix;
 		this.remoteStorage = remoteStorage;
 		this.localStorage = localStorage;
 		this.ioStats = localStorage.getStats();

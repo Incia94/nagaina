@@ -5,8 +5,6 @@ import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.api.StorageMockClient;
 import com.emc.mongoose.storage.mock.api.exception.ContainerMockException;
 import com.emc.mongoose.storage.mock.api.exception.ContainerMockNotFoundException;
-import static com.emc.mongoose.ui.config.Config.ItemConfig.NamingConfig;
-import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig.LimitConfig;
 import com.emc.mongoose.ui.log.LogUtil;
 import static com.emc.mongoose.storage.mock.impl.http.request.XmlShortcuts.appendElement;
 import com.emc.mongoose.ui.log.Loggers;
@@ -65,10 +63,10 @@ extends RequestHandlerBase<T> {
 	}
 
 	public S3RequestHandler(
-		final LimitConfig limitConfig, final NamingConfig namingConfig,
-		final StorageMock<T> localStorage, final StorageMockClient<T> remoteStorage
+		final float rateLimit, final String prefix, final int idRadix, final StorageMock<T> localStorage,
+		final StorageMockClient<T> remoteStorage
 	) throws RemoteException {
-		super(limitConfig, namingConfig, localStorage, remoteStorage);
+		super(rateLimit, prefix, idRadix, localStorage, remoteStorage);
 	}
 
 	@Override

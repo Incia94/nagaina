@@ -2,13 +2,21 @@ package com.emc.mongoose.tests.unit;
 
 import com.emc.mongoose.common.api.SizeInBytes;
 import com.emc.mongoose.common.math.Random;
+import com.emc.mongoose.model.data.ContentSource;
+import com.emc.mongoose.model.data.ContentSourceUtil;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.impl.http.StorageMockFactory;
 import com.emc.mongoose.ui.config.Config;
+
+import com.emc.mongoose.ui.config.Config.ItemConfig.DataConfig.ContentConfig;
+import com.emc.mongoose.ui.config.Config.ItemConfig.NamingConfig;
+import com.emc.mongoose.ui.config.Config.StorageConfig.MockConfig;
+import com.emc.mongoose.ui.config.Config.StorageConfig.MockConfig.ContainerConfig;
+import com.emc.mongoose.ui.config.Config.StorageConfig.MockConfig.FailConfig;
+import com.emc.mongoose.ui.config.Config.StorageConfig.NetConfig;
 import com.emc.mongoose.ui.config.reader.jackson.ConfigParser;
 import com.emc.mongoose.ui.log.LogUtil;
 import com.emc.mongoose.ui.log.Loggers;
-
 import org.apache.logging.log4j.Level;
 
 import org.junit.After;
@@ -86,7 +94,24 @@ public class SwiftApiTest {
 		this.objSize = objSize;
 		this.concurrency = concurrency;
 		objIds = new ArrayList<>(objCount);
-		storageMock = new StorageMockFactory(storageConfig, itemConfig, stepConfig)
+
+		final MockConfig mockConfig = storageConfig.getMockConfig();
+		final ContainerConfig containerConfig = mockConfig.getContainerConfig();
+		final FailConfig failConfig = mockConfig.getFailConfig();
+		final NetConfig netConfig = storageConfig.getNetConfig();
+		final NamingConfig namingConfig = itemConfig.getNamingConfig();
+		final ContentConfig contentConfig = itemConfig.getDataConfig().getContentConfig();
+		final ContentSource contentSrc = ContentSourceUtil.getInstance(
+			contentConfig.getFile(), contentConfig.getSeed(), contentConfig.getRingConfig().getSize(),
+			contentConfig.getRingConfig().getCache()
+		);
+
+		storageMock = new StorageMockFactory(
+			itemConfig.getInputConfig().getFile(), mockConfig.getCapacity(), containerConfig.getCapacity(),
+			containerConfig.getCountLimit(), (int) stepConfig.getMetricsConfig().getPeriod(), failConfig.getConnections(),
+			failConfig.getResponses(), contentSrc, netConfig.getNodeConfig().getPort(), netConfig.getSsl(),
+			(float) stepConfig.getLimitConfig().getRate(), namingConfig.getPrefix(), namingConfig.getRadix()
+		)
 			.newStorageMock();
 		storageMock.start();
 		

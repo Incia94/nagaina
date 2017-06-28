@@ -14,11 +14,6 @@ import com.emc.mongoose.storage.mock.api.exception.ContainerMockException;
 import com.emc.mongoose.storage.mock.api.exception.ContainerMockNotFoundException;
 import com.emc.mongoose.storage.mock.api.exception.ObjectMockNotFoundException;
 import com.emc.mongoose.storage.mock.api.exception.StorageMockCapacityLimitReachedException;
-import static com.emc.mongoose.ui.config.Config.ItemConfig;
-import static com.emc.mongoose.ui.config.Config.StorageConfig.MockConfig;
-import static com.emc.mongoose.ui.config.Config.StorageConfig.MockConfig.ContainerConfig;
-import static com.emc.mongoose.ui.config.Config.StorageConfig.MockConfig.FailConfig;
-import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig.MetricsConfig;
 import com.emc.mongoose.ui.log.LogUtil;
 import com.emc.mongoose.ui.log.Loggers;
 
@@ -59,20 +54,19 @@ implements StorageMock<I> {
 
 	@SuppressWarnings("unchecked")
 	public StorageMockBase(
-		final MockConfig mockConfig, final MetricsConfig metricsConfig, final ItemConfig itemConfig,
-		final ContentSource contentSrc
+		final String itemInputFile, final int storageCapacity, final int containerCapacity,
+		final int containerCountLimit, final int metricsPeriodSec, final long dropEveryConnection,
+		final long missEveryResponse, final ContentSource contentSrc
 	) {
 		super();
-		final ContainerConfig containerConfig = mockConfig.getContainerConfig();
-		storageMap = new ListingLRUMap<>(containerConfig.getCountLimit());
-		this.itemInputFile = itemConfig.getInputConfig().getFile();
+		storageMap = new ListingLRUMap<>(containerCountLimit);
+		this.itemInputFile = itemInputFile;
 		this.contentSrc = contentSrc;
-		this.ioStats = new BasicStorageIoStats(this, (int) metricsConfig.getPeriod());
-		this.storageCapacity = mockConfig.getCapacity();
-		this.containerCapacity = containerConfig.getCapacity();
-		final FailConfig failConfig = mockConfig.getFailConfig();
-		this.dropEveryConnection = failConfig.getConnections();
-		this.missEveryResponse = failConfig.getResponses();
+		this.ioStats = new BasicStorageIoStats(this, metricsPeriodSec);
+		this.storageCapacity = storageCapacity;
+		this.containerCapacity = containerCapacity;
+		this.dropEveryConnection = dropEveryConnection;
+		this.missEveryResponse = missEveryResponse;
 		this.defaultContainer = new WeightlessObjectContainerMock<>(containerCapacity);
 		storageMap.put(DEFAULT_CONTAINER_NAME, defaultContainer);
 	}

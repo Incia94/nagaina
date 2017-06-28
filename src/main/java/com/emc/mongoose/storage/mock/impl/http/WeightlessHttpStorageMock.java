@@ -1,6 +1,5 @@
 package com.emc.mongoose.storage.mock.impl.http;
 
-import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig;
 import com.emc.mongoose.model.NamingThreadFactory;
 import com.emc.mongoose.common.concurrent.ThreadUtil;
 import com.emc.mongoose.common.net.ssl.SslContext;
@@ -8,9 +7,6 @@ import com.emc.mongoose.model.data.ContentSource;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.impl.base.BasicDataItemMock;
 import com.emc.mongoose.storage.mock.impl.base.StorageMockBase;
-import static com.emc.mongoose.ui.config.Config.ItemConfig;
-import static com.emc.mongoose.ui.config.Config.StorageConfig;
-import static com.emc.mongoose.ui.config.Config.StorageConfig.NetConfig;
 import com.emc.mongoose.ui.log.LogUtil;
 import com.emc.mongoose.ui.log.Loggers;
 
@@ -56,16 +52,17 @@ extends StorageMockBase<DataItemMock>{
 
 	@SuppressWarnings("ConstantConditions")
 	public WeightlessHttpStorageMock(
-		final StorageConfig storageConfig, final ItemConfig itemConfig,
-		final StepConfig stepConfig, final ContentSource contentSource,
+		final String itemInputFile, final int storageCapacity, final int containerCapacity,
+		final int containerCountLimit, final int metricsPeriodSec, final long dropEveryConnection,
+		final long missEveryResponse, final ContentSource contentSrc, final int port, final boolean sslFlag,
 		final List<ChannelInboundHandler> handlers
 	) {
 		super(
-			storageConfig.getMockConfig(), stepConfig.getMetricsConfig(), itemConfig, contentSource
+			itemInputFile, storageCapacity, containerCapacity, containerCountLimit, metricsPeriodSec,
+			dropEveryConnection, missEveryResponse, contentSrc
 		);
-		final NetConfig netConfig = storageConfig.getNetConfig();
-		port = netConfig.getNodeConfig().getPort();
-		sslFlag = storageConfig.getNetConfig().getSsl();
+		this.port = port;
+		this.sslFlag = sslFlag;
 		final int workerCount/*;
 		final int confWorkerCount = storageConfig.getDriverConfig().getIoConfig().getWorkers();
 		if(confWorkerCount < 1) {

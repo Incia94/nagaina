@@ -1,7 +1,6 @@
 package com.emc.mongoose.storage.mock.impl.http;
 
 import com.emc.mongoose.model.data.ContentSource;
-import com.emc.mongoose.model.data.ContentSourceUtil;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.api.StorageMockClient;
@@ -9,13 +8,6 @@ import com.emc.mongoose.storage.mock.api.StorageMockNode;
 import com.emc.mongoose.storage.mock.impl.http.request.AtmosRequestHandler;
 import com.emc.mongoose.storage.mock.impl.http.request.S3RequestHandler;
 import com.emc.mongoose.storage.mock.impl.http.request.SwiftRequestHandler;
-import static com.emc.mongoose.ui.config.Config.ItemConfig.DataConfig.ContentConfig;
-import static com.emc.mongoose.ui.config.Config.ItemConfig.DataConfig.ContentConfig.RingConfig;
-import static com.emc.mongoose.ui.config.Config.ItemConfig;
-import static com.emc.mongoose.ui.config.Config.StorageConfig;
-import static com.emc.mongoose.ui.config.Config.ItemConfig.NamingConfig;
-import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig.LimitConfig;
-import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig;
 
 import io.netty.channel.ChannelInboundHandler;
 
@@ -29,74 +21,83 @@ import java.util.List;
  */
 public class StorageMockFactory {
 
-	private final StorageConfig storageConfig;
-	private final ItemConfig itemConfig;
-	private final StepConfig stepConfig;
-	private final NamingConfig namingConfig;
+	private final String itemInputFile;
+	private final int storageCapacity;
+	private final int containerCapacity;
+	private final int containerCountLimit;
+	private final int metricsPeriodSec;
+	private final long dropEveryConnection;
+	private final long missEveryResponse;
+	private final ContentSource contentSrc;
+	private final int port;
+	private final boolean sslFlag;
+	private final float rateLimit;
+	private final String idPrefix;
+	private final int idRadix;
 
 	public StorageMockFactory(
-		final StorageConfig storageConfig,  final ItemConfig itemConfig, final StepConfig stepConfig
+		final String itemInputFile, final int storageCapacity, final int containerCapacity,
+		final int containerCountLimit, final int metricsPeriodSec, final long dropEveryConnection,
+		final long missEveryResponse, final ContentSource contentSrc, final int port, final boolean sslFlag,
+		final float rateLimit, final String idPrefix, final int idRadix
 	) {
-		this.storageConfig = storageConfig;
-		this.itemConfig = itemConfig;
-		this.stepConfig = stepConfig;
-		this.namingConfig = itemConfig.getNamingConfig();
+		this.itemInputFile = itemInputFile;
+		this.storageCapacity = storageCapacity;
+		this.containerCapacity = containerCapacity;
+		this.containerCountLimit = containerCountLimit;
+		this.metricsPeriodSec = metricsPeriodSec;
+		this.dropEveryConnection = dropEveryConnection;
+		this.missEveryResponse = missEveryResponse;
+		this.contentSrc = contentSrc;
+		this.port = port;
+		this.sslFlag = sslFlag;
+		this.rateLimit = rateLimit;
+		this.idPrefix = idPrefix;
+		this.idRadix = idRadix;
 	}
 
 	public StorageMockNode newStorageNodeMock()
 	throws IOException {
-		final ContentConfig contentConfig = itemConfig.getDataConfig().getContentConfig();
-		final String contentSourcePath = contentConfig.getFile();
-		final RingConfig ringConfig = contentConfig.getRingConfig();
-		final ContentSource contentSrc = ContentSourceUtil.getInstance(
-			contentSourcePath, contentConfig.getSeed(), ringConfig.getSize(), ringConfig.getCache()
-		);
 		final List<ChannelInboundHandler> handlers = new ArrayList<>();
-		final StorageMock<DataItemMock> storage = new WeightlessHttpStorageMock(
-			storageConfig, itemConfig, stepConfig, contentSrc, handlers
+		final StorageMock<DataItemMock> storageMock = new WeightlessHttpStorageMock(
+			itemInputFile, storageCapacity, containerCapacity, containerCountLimit, metricsPeriodSec,
+			dropEveryConnection, missEveryResponse, contentSrc, port, sslFlag, handlers
 		);
 		final StorageMockNode<DataItemMock> storageMockNode = new BasicStorageMockNode(
-			storage, contentSrc
+			storageMock, contentSrc
 		);
 		final StorageMockClient<DataItemMock> client = storageMockNode.client();
-		final LimitConfig limitConfig = stepConfig.getLimitConfig();
 		handlers.add(
-			new SwiftRequestHandler<>(limitConfig, namingConfig, storage, client)
+			new SwiftRequestHandler<>(rateLimit, idPrefix, idRadix, storageMock, client)
 		);
 		handlers.add(
-			new AtmosRequestHandler<>(limitConfig, namingConfig, storage, client)
+			new AtmosRequestHandler<>(rateLimit, idPrefix, idRadix, storageMock, client)
 		);
 		handlers.add(
-			new S3RequestHandler<>(limitConfig, namingConfig, storage, client)
+			new S3RequestHandler<>(rateLimit, idPrefix, idRadix, storageMock, client)
 		);
 		return storageMockNode;
 	}
 
 	public StorageMock newStorageMock()
 	throws IOException {
-		final ContentConfig contentConfig = itemConfig.getDataConfig().getContentConfig();
-		final String contentSourcePath = contentConfig.getFile();
-		final RingConfig ringConfig = contentConfig.getRingConfig();
-		final ContentSource contentSrc = ContentSourceUtil.getInstance(
-			contentSourcePath, contentConfig.getSeed(), ringConfig.getSize(), ringConfig.getCache()
-		);
 		final List<ChannelInboundHandler> handlers = new ArrayList<>();
-		final StorageMock<DataItemMock> storage = new WeightlessHttpStorageMock(
-			storageConfig, itemConfig, stepConfig, contentSrc, handlers
+		final StorageMock<DataItemMock> storageMock = new WeightlessHttpStorageMock(
+			itemInputFile, storageCapacity, containerCapacity, containerCountLimit, metricsPeriodSec,
+			dropEveryConnection, missEveryResponse, contentSrc, port, sslFlag, handlers
 		);
-		final LimitConfig limitConfig = stepConfig.getLimitConfig();
 		try {
 			handlers.add(
-				new SwiftRequestHandler<>(limitConfig, namingConfig, storage, null)
+				new SwiftRequestHandler<>(rateLimit, idPrefix, idRadix, storageMock, null)
 			);
 			handlers.add(
-				new AtmosRequestHandler<>(limitConfig, namingConfig, storage, null)
+				new AtmosRequestHandler<>(rateLimit, idPrefix, idRadix, storageMock, null)
 			);
 			handlers.add(
-				new S3RequestHandler<>(limitConfig, namingConfig, storage, null)
+				new S3RequestHandler<>(rateLimit, idPrefix, idRadix, storageMock, null)
 			);
 		} catch(final RemoteException ignore) {
 		}
-		return storage;
+		return storageMock;
 	}
 }
