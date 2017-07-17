@@ -2,10 +2,10 @@ package com.emc.mongoose.storage.mock.impl.base;
 
 import com.codahale.metrics.Clock;
 import com.codahale.metrics.Counter;
-import com.emc.mongoose.common.Constants;
-import static com.emc.mongoose.common.Constants.LOCALE_DEFAULT;
-import com.emc.mongoose.model.metrics.CustomMeter;
-import com.emc.mongoose.model.metrics.ResumableUserTimeClock;
+import com.emc.mongoose.api.common.Constants;
+import static com.emc.mongoose.api.common.Constants.LOCALE_DEFAULT;
+import com.emc.mongoose.api.model.metrics.CustomMeter;
+import com.emc.mongoose.api.model.metrics.ResumableUserTimeClock;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.api.StorageIoStats;
 import com.emc.mongoose.ui.log.LogUtil;

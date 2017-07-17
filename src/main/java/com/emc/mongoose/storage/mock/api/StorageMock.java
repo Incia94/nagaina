@@ -1,7 +1,7 @@
 package com.emc.mongoose.storage.mock.api;
 
-import com.emc.mongoose.common.api.ByteRange;
-import com.emc.mongoose.common.concurrent.Daemon;
+import com.emc.mongoose.api.common.ByteRange;
+import com.emc.mongoose.api.common.concurrent.Daemon;
 import com.emc.mongoose.storage.mock.api.exception.ContainerMockException;
 import com.emc.mongoose.storage.mock.api.exception.ContainerMockNotFoundException;
 import com.emc.mongoose.storage.mock.api.exception.ObjectMockNotFoundException;

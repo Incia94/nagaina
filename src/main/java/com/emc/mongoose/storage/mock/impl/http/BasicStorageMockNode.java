@@ -1,10 +1,10 @@
 package com.emc.mongoose.storage.mock.impl.http;
 
-import com.emc.mongoose.model.DaemonBase;
-import com.emc.mongoose.common.exception.OmgDoesNotPerformException;
-import com.emc.mongoose.common.exception.OmgLookAtMyConsoleException;
-import com.emc.mongoose.common.net.NetUtil;
-import com.emc.mongoose.model.data.ContentSource;
+import com.emc.mongoose.api.model.DaemonBase;
+import com.emc.mongoose.api.common.exception.OmgDoesNotPerformException;
+import com.emc.mongoose.api.common.exception.OmgLookAtMyConsoleException;
+import com.emc.mongoose.api.common.net.NetUtil;
+import com.emc.mongoose.api.model.data.ContentSource;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.api.StorageMockClient;

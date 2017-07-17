@@ -1,8 +1,8 @@
 package com.emc.mongoose.storage.mock.impl.base;
 
-import com.emc.mongoose.model.item.BasicDataItem;
-import static com.emc.mongoose.model.item.DataItem.getRangeCount;
-import static com.emc.mongoose.model.item.DataItem.getRangeOffset;
+import com.emc.mongoose.api.model.item.BasicDataItem;
+import static com.emc.mongoose.api.model.item.DataItem.getRangeCount;
+import static com.emc.mongoose.api.model.item.DataItem.getRangeOffset;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.ui.log.Loggers;
 

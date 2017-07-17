@@ -1,11 +1,13 @@
 package com.emc.mongoose.storage.mock;
 
-import com.emc.mongoose.common.concurrent.Daemon;
-import com.emc.mongoose.model.data.ContentSource;
-import com.emc.mongoose.model.data.ContentSourceUtil;
+import com.emc.mongoose.api.common.concurrent.Daemon;
+import com.emc.mongoose.api.model.data.ContentSource;
+import com.emc.mongoose.api.model.data.ContentSourceUtil;
 import com.emc.mongoose.storage.mock.impl.http.StorageMockFactory;
 import com.emc.mongoose.ui.cli.CliArgParser;
 import com.emc.mongoose.ui.config.Config;
+
+import static com.emc.mongoose.api.common.Constants.KEY_TEST_STEP_ID;
 import static com.emc.mongoose.ui.config.Config.ItemConfig;
 import static com.emc.mongoose.ui.config.Config.StorageConfig;
 import static com.emc.mongoose.ui.config.Config.TestConfig.StepConfig;
@@ -18,7 +20,6 @@ import com.emc.mongoose.ui.config.Config.StorageConfig.NetConfig;
 import com.emc.mongoose.ui.config.reader.jackson.ConfigParser;
 import com.emc.mongoose.ui.log.LogUtil;
 import com.emc.mongoose.ui.log.Loggers;
-import static com.emc.mongoose.common.Constants.KEY_STEP_NAME;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.ThreadContext;
@@ -46,10 +47,10 @@ public class Main {
 		final StepConfig stepConfig = config.getTestConfig().getStepConfig();
 		String jobName = stepConfig.getName();
 		if(jobName == null) {
-			jobName = ThreadContext.get(KEY_STEP_NAME);
+			jobName = ThreadContext.get(KEY_TEST_STEP_ID);
 			stepConfig.setName(jobName);
 		} else {
-			ThreadContext.put(KEY_STEP_NAME, jobName);
+			ThreadContext.put(KEY_TEST_STEP_ID, jobName);
 		}
 		if(jobName == null) {
 			throw new AssertionError("Load job name is not set");

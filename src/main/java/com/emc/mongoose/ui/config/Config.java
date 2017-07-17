@@ -1,8 +1,8 @@
 package com.emc.mongoose.ui.config;
 
-import com.emc.mongoose.common.api.SizeInBytes;
-import com.emc.mongoose.common.api.TimeUtil;
-import com.emc.mongoose.common.reflection.TypeUtil;
+import com.emc.mongoose.api.common.SizeInBytes;
+import com.emc.mongoose.api.common.TimeUtil;
+import com.emc.mongoose.api.common.reflection.TypeUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

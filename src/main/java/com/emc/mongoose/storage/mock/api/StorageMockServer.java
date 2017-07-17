@@ -1,7 +1,7 @@
 package com.emc.mongoose.storage.mock.api;
 
-import com.emc.mongoose.common.concurrent.Daemon;
-import com.emc.mongoose.common.net.Service;
+import com.emc.mongoose.api.common.concurrent.Daemon;
+import com.emc.mongoose.api.common.net.Service;
 import com.emc.mongoose.storage.mock.api.exception.ContainerMockException;
 
 import java.rmi.Remote;

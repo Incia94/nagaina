@@ -1,6 +1,6 @@
 package com.emc.mongoose.storage.mock.api;
 
-import com.emc.mongoose.model.item.DataItem;
+import com.emc.mongoose.api.model.item.DataItem;
 
 /**
  Created on 19.07.16.

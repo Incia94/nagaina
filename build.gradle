@@ -70,8 +70,8 @@ ext {
 
 dependencies {
 	compile(
-		"com.github.emc-mongoose:mongoose-common:${depVersion.mongoose}",
-		"com.github.emc-mongoose:mongoose-model:${depVersion.mongoose}",
+		"com.github.emc-mongoose:mongoose-api-common:${depVersion.mongoose}",
+		"com.github.emc-mongoose:mongoose-api-model:${depVersion.mongoose}",
 		"com.github.emc-mongoose:mongoose-storage-driver-net:${depVersion.mongoose}",
 		"com.github.emc-mongoose:mongoose-ui:${depVersion.mongoose}",
 

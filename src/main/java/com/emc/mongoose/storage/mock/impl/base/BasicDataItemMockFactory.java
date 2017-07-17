@@ -1,7 +1,7 @@
 package com.emc.mongoose.storage.mock.impl.base;
 
-import com.emc.mongoose.model.item.BasicDataItemFactory;
-import com.emc.mongoose.model.item.DataItemFactory;
+import com.emc.mongoose.api.model.item.BasicDataItemFactory;
+import com.emc.mongoose.api.model.item.DataItemFactory;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 
 /**

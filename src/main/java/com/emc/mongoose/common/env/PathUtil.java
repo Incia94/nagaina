@@ -1,4 +1,4 @@
-package com.emc.mongoose.common.env;
+package com.emc.mongoose.api.common.env;
 
 import java.io.File;
 import java.net.URI;

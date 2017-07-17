@@ -1,9 +1,9 @@
 package com.emc.mongoose.storage.mock.impl.http;
 
-import com.emc.mongoose.model.NamingThreadFactory;
-import com.emc.mongoose.common.concurrent.ThreadUtil;
-import com.emc.mongoose.common.net.ssl.SslContext;
-import com.emc.mongoose.model.data.ContentSource;
+import com.emc.mongoose.api.model.NamingThreadFactory;
+import com.emc.mongoose.api.common.concurrent.ThreadUtil;
+import com.emc.mongoose.api.common.net.ssl.SslContext;
+import com.emc.mongoose.api.model.data.ContentSource;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.impl.base.BasicDataItemMock;
 import com.emc.mongoose.storage.mock.impl.base.StorageMockBase;

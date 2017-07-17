@@ -1,11 +1,11 @@
 package com.emc.mongoose.storage.mock.impl.base;
 
-import com.emc.mongoose.common.api.ByteRange;
-import com.emc.mongoose.common.collection.ListingLRUMap;
-import com.emc.mongoose.model.DaemonBase;
-import com.emc.mongoose.model.data.ContentSource;
-import com.emc.mongoose.model.item.ItemFactory;
-import com.emc.mongoose.model.item.CsvFileItemInput;
+import com.emc.mongoose.api.common.ByteRange;
+import com.emc.mongoose.api.common.collection.ListingLRUMap;
+import com.emc.mongoose.api.model.DaemonBase;
+import com.emc.mongoose.api.model.data.ContentSource;
+import com.emc.mongoose.api.model.item.ItemFactory;
+import com.emc.mongoose.api.model.item.CsvFileItemInput;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.api.ObjectContainerMock;
 import com.emc.mongoose.storage.mock.api.StorageIoStats;

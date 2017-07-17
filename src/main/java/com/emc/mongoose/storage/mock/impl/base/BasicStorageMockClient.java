@@ -1,17 +1,17 @@
 package com.emc.mongoose.storage.mock.impl.base;
 
-import com.emc.mongoose.common.concurrent.AnyNotNullSharedFutureTaskBase;
-import com.emc.mongoose.model.DaemonBase;
-import com.emc.mongoose.common.concurrent.TaskSequencer;
-import com.emc.mongoose.common.concurrent.ThreadUtil;
-import com.emc.mongoose.model.data.ContentSource;
+import com.emc.mongoose.api.common.concurrent.AnyNotNullSharedFutureTaskBase;
+import com.emc.mongoose.api.model.DaemonBase;
+import com.emc.mongoose.api.common.concurrent.TaskSequencer;
+import com.emc.mongoose.api.common.concurrent.ThreadUtil;
+import com.emc.mongoose.api.model.data.ContentSource;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.api.StorageMockClient;
 import com.emc.mongoose.storage.mock.api.StorageMockServer;
 import com.emc.mongoose.storage.mock.api.exception.ContainerMockException;
 import com.emc.mongoose.storage.mock.impl.remote.MDns;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.model.NamingThreadFactory;
+import com.emc.mongoose.api.model.NamingThreadFactory;
 import static com.emc.mongoose.storage.mock.impl.http.WeightlessHttpStorageMock.SVC_NAME;
 import com.emc.mongoose.ui.log.Loggers;
 

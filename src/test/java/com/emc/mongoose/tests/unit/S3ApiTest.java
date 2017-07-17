@@ -1,9 +1,9 @@
 package com.emc.mongoose.tests.unit;
 
-import com.emc.mongoose.common.api.SizeInBytes;
-import com.emc.mongoose.common.math.Random;
-import com.emc.mongoose.model.data.ContentSource;
-import com.emc.mongoose.model.data.ContentSourceUtil;
+import com.emc.mongoose.api.common.SizeInBytes;
+import com.emc.mongoose.api.common.math.Random;
+import com.emc.mongoose.api.model.data.ContentSource;
+import com.emc.mongoose.api.model.data.ContentSourceUtil;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.impl.http.StorageMockFactory;
 import com.emc.mongoose.ui.config.Config;

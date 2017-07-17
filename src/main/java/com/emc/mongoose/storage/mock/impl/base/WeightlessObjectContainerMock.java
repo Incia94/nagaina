@@ -1,6 +1,6 @@
 package com.emc.mongoose.storage.mock.impl.base;
 
-import com.emc.mongoose.common.collection.ListingLRUMap;
+import com.emc.mongoose.api.common.collection.ListingLRUMap;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.api.ObjectContainerMock;
 
