@@ -72,7 +72,6 @@ dependencies {
 	compile(
 		"com.github.emc-mongoose:mongoose-api-common:${depVersion.mongoose}",
 		"com.github.emc-mongoose:mongoose-api-model:${depVersion.mongoose}",
-		"com.github.emc-mongoose:mongoose-storage-driver-net:${depVersion.mongoose}",
 		"com.github.emc-mongoose:mongoose-ui:${depVersion.mongoose}",
 
 		"commons-lang:commons-lang:${depVersion.commonsLang}",

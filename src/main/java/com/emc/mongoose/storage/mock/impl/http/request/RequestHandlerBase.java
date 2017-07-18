@@ -2,8 +2,6 @@ package com.emc.mongoose.storage.mock.impl.http.request;
 
 import com.emc.mongoose.api.common.ByteRange;
 import com.emc.mongoose.api.model.item.DataItem;
-import com.emc.mongoose.storage.driver.net.base.data.DataItemFileRegion;
-import com.emc.mongoose.storage.driver.net.base.data.SeekableByteChannelChunkedNioStream;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.api.StorageIoStats;
 import com.emc.mongoose.storage.mock.api.StorageMock;
@@ -12,6 +10,8 @@ import com.emc.mongoose.storage.mock.api.exception.ContainerMockException;
 import com.emc.mongoose.storage.mock.api.exception.ContainerMockNotFoundException;
 import com.emc.mongoose.storage.mock.api.exception.ObjectMockNotFoundException;
 import com.emc.mongoose.storage.mock.api.exception.StorageMockCapacityLimitReachedException;
+import com.emc.mongoose.storage.mock.impl.base.DataItemFileRegion;
+import com.emc.mongoose.storage.mock.impl.base.SeekableByteChannelChunkedNioStream;
 import com.emc.mongoose.ui.log.LogUtil;
 import static com.emc.mongoose.api.model.item.DataItem.getRangeCount;
 import static com.emc.mongoose.api.model.item.DataItem.getRangeOffset;
