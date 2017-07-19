@@ -9,12 +9,14 @@ import java.net.URISyntaxException;
  */
 public interface PathUtil {
 
+	String BASE_DIR = getBaseDir();
+
 	static String getBaseDir() {
 		return getBasePathForClass(PathUtil.class);
 	}
 
 	static URI getBaseUriForClass(final Class<?> cls)
-	throws URISyntaxException {
+		throws URISyntaxException {
 		return cls.getProtectionDomain().getCodeSource().getLocation().toURI();
 	}
 
@@ -24,10 +26,9 @@ public interface PathUtil {
 			File basePath;
 			final File clsFile = new File(getBaseUriForClass(cls).getPath());
 			if(
-				clsFile.isFile() ||
-				clsFile.getPath().endsWith(".jar") ||
-				clsFile.getPath().endsWith(".zip")
-			) {
+				!clsFile.isDirectory() || clsFile.getPath().endsWith(".jar") ||
+					clsFile.getPath().endsWith(".zip")
+				) {
 				basePath = clsFile.getParentFile();
 			} else {
 				basePath = clsFile;
@@ -36,10 +37,10 @@ public interface PathUtil {
 			// bandage for eclipse
 			if(
 				basePathStr.endsWith(File.separator + "lib") ||
-				basePathStr.endsWith(File.separator + "bin") ||
-				basePathStr.endsWith("bin" + File.separator) ||
-				basePathStr.endsWith("lib" + File.separator)
-			) {
+					basePathStr.endsWith(File.separator + "bin") ||
+					basePathStr.endsWith("bin" + File.separator) ||
+					basePathStr.endsWith("lib" + File.separator)
+				) {
 				basePath = basePath.getParentFile();
 			}
 			// bandage for netbeans
@@ -49,8 +50,14 @@ public interface PathUtil {
 					.getParentFile();
 			}
 			// bandage for idea
-			if(basePathStr.endsWith(File.separator + "build" + File.separator + "classes" + File.separator + "main")) {
+			if(
+				basePathStr.endsWith(
+					File.separator + "build" + File.separator + "classes" + File.separator +
+						"java" + File.separator + "main"
+				)
+			) {
 				basePath = basePath
+					.getParentFile()
 					.getParentFile()
 					.getParentFile()
 					.getParentFile();
@@ -59,14 +66,11 @@ public interface PathUtil {
 			if(basePathStr.endsWith(File.separator + "build" + File.separator + "libs")) {
 				basePath = basePath
 					.getParentFile()
+					.getParentFile()
 					.getParentFile();
 			}
-			// final fix
-			basePathStr = basePath.toString();
-			if(!basePathStr.endsWith(File.separator)) {
-				basePathStr = basePath + File.separator;
-			}
-			return basePathStr;
+
+			return basePath.toString();
 		} catch(final URISyntaxException e) {
 			throw new RuntimeException("Cannot figure out base path for class: " + cls.getName());
 		}
