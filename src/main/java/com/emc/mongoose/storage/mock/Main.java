@@ -48,6 +48,9 @@ public class Main {
 		String jobName = stepConfig.getName();
 		if(jobName == null) {
 			jobName = ThreadContext.get(KEY_TEST_STEP_ID);
+			if(jobName == null) {
+				jobName = "nagaina-" + LogUtil.getDateTimeStamp();
+			}
 			stepConfig.setName(jobName);
 		} else {
 			ThreadContext.put(KEY_TEST_STEP_ID, jobName);
