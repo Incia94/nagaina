@@ -1,6 +1,6 @@
 package com.emc.mongoose.storage.mock.impl.http;
 
-import com.emc.mongoose.api.model.data.ContentSource;
+import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.api.StorageMockClient;
@@ -28,7 +28,7 @@ public class StorageMockFactory {
 	private final int metricsPeriodSec;
 	private final long dropEveryConnection;
 	private final long missEveryResponse;
-	private final ContentSource contentSrc;
+	private final DataInput dataInput;
 	private final int port;
 	private final boolean sslFlag;
 	private final float rateLimit;
@@ -38,7 +38,7 @@ public class StorageMockFactory {
 	public StorageMockFactory(
 		final String itemInputFile, final int storageCapacity, final int containerCapacity,
 		final int containerCountLimit, final int metricsPeriodSec, final long dropEveryConnection,
-		final long missEveryResponse, final ContentSource contentSrc, final int port, final boolean sslFlag,
+		final long missEveryResponse, final DataInput dataInput, final int port, final boolean sslFlag,
 		final float rateLimit, final String idPrefix, final int idRadix
 	) {
 		this.itemInputFile = itemInputFile;
@@ -48,7 +48,7 @@ public class StorageMockFactory {
 		this.metricsPeriodSec = metricsPeriodSec;
 		this.dropEveryConnection = dropEveryConnection;
 		this.missEveryResponse = missEveryResponse;
-		this.contentSrc = contentSrc;
+		this.dataInput = dataInput;
 		this.port = port;
 		this.sslFlag = sslFlag;
 		this.rateLimit = rateLimit;
@@ -61,10 +61,10 @@ public class StorageMockFactory {
 		final List<ChannelInboundHandler> handlers = new ArrayList<>();
 		final StorageMock<DataItemMock> storageMock = new WeightlessHttpStorageMock(
 			itemInputFile, storageCapacity, containerCapacity, containerCountLimit, metricsPeriodSec,
-			dropEveryConnection, missEveryResponse, contentSrc, port, sslFlag, handlers
+			dropEveryConnection, missEveryResponse, dataInput, port, sslFlag, handlers
 		);
 		final StorageMockNode<DataItemMock> storageMockNode = new BasicStorageMockNode(
-			storageMock, contentSrc
+			storageMock, dataInput
 		);
 		final StorageMockClient<DataItemMock> client = storageMockNode.client();
 		handlers.add(
@@ -84,7 +84,7 @@ public class StorageMockFactory {
 		final List<ChannelInboundHandler> handlers = new ArrayList<>();
 		final StorageMock<DataItemMock> storageMock = new WeightlessHttpStorageMock(
 			itemInputFile, storageCapacity, containerCapacity, containerCountLimit, metricsPeriodSec,
-			dropEveryConnection, missEveryResponse, contentSrc, port, sslFlag, handlers
+			dropEveryConnection, missEveryResponse, dataInput, port, sslFlag, handlers
 		);
 		try {
 			handlers.add(

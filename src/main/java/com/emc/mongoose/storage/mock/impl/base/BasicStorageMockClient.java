@@ -4,7 +4,7 @@ import com.emc.mongoose.api.common.concurrent.AnyNotNullSharedFutureTaskBase;
 import com.emc.mongoose.api.model.DaemonBase;
 import com.emc.mongoose.api.common.concurrent.TaskSequencer;
 import com.emc.mongoose.api.common.concurrent.ThreadUtil;
-import com.emc.mongoose.api.model.data.ContentSource;
+import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.api.StorageMockClient;
 import com.emc.mongoose.storage.mock.api.StorageMockServer;
@@ -51,12 +51,12 @@ public final class BasicStorageMockClient<T extends DataItemMock>
 extends DaemonBase
 implements StorageMockClient<T> {
 
-	private final ContentSource contentSrc;
+	private final DataInput contentSrc;
 	private final JmDNS jmDns;
 	private final Map<URI, StorageMockServer<T>> remoteNodeMap = new ConcurrentHashMap<>();
 	private final ExecutorService executor;
 
-	public BasicStorageMockClient(final ContentSource contentSrc, final JmDNS jmDns) {
+	public BasicStorageMockClient(final DataInput dataInput, final JmDNS jmDns) {
 		this.executor = new ThreadPoolExecutor(
 			ThreadUtil.getHardwareThreadCount(), ThreadUtil.getHardwareThreadCount(),
 			0, TimeUnit.DAYS, new ArrayBlockingQueue<>(TaskSequencer.DEFAULT_TASK_QUEUE_SIZE_LIMIT),
@@ -70,7 +70,7 @@ implements StorageMockClient<T> {
 				return rf;
 			}
 		};
-		this.contentSrc = contentSrc;
+		this.contentSrc = dataInput;
 		this.jmDns = jmDns;
 	}
 	
@@ -126,7 +126,7 @@ implements StorageMockClient<T> {
 			Thread.sleep(1);
 		}
 		if(result != null) {
-			result.setContentSrc(contentSrc);
+			result.setDataInput(contentSrc);
 		}
 		return result;
 	}

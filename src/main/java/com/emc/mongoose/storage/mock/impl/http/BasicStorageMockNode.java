@@ -4,7 +4,7 @@ import com.emc.mongoose.api.model.DaemonBase;
 import com.emc.mongoose.api.common.exception.OmgDoesNotPerformException;
 import com.emc.mongoose.api.common.exception.OmgLookAtMyConsoleException;
 import com.emc.mongoose.api.common.net.NetUtil;
-import com.emc.mongoose.api.model.data.ContentSource;
+import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.api.StorageMockClient;
@@ -33,13 +33,13 @@ implements StorageMockNode<DataItemMock> {
 	private StorageMockClient<DataItemMock> client;
 	private StorageMockServer<DataItemMock> server;
 
-	public BasicStorageMockNode(final StorageMock<DataItemMock> storage, final ContentSource contentSrc) {
+	public BasicStorageMockNode(final StorageMock<DataItemMock> storage, final DataInput dataInput) {
 		// System.setProperty("java.rmi.server.hostname", NetUtil.getHostAddrString()); workaround
 		try {
 			jmDns = JmDNS.create(NetUtil.getHostAddr());
 			Loggers.MSG.info("mDNS address: " + jmDns.getInetAddress());
 			server = new BasicStorageMockServer<>(storage, jmDns);
-			client = new BasicStorageMockClient<>(contentSrc, jmDns);
+			client = new BasicStorageMockClient<>(dataInput, jmDns);
 		} catch(final IOException | OmgDoesNotPerformException | OmgLookAtMyConsoleException e) {
 			LogUtil.exception(Level.ERROR, e, "Failed to create storage mock node");
 		}

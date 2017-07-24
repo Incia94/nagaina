@@ -3,7 +3,7 @@ package com.emc.mongoose.storage.mock.impl.base;
 import com.emc.mongoose.api.common.ByteRange;
 import com.emc.mongoose.api.common.collection.ListingLRUMap;
 import com.emc.mongoose.api.model.DaemonBase;
-import com.emc.mongoose.api.model.data.ContentSource;
+import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.api.model.item.ItemFactory;
 import com.emc.mongoose.api.model.item.CsvFileItemInput;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
@@ -41,7 +41,7 @@ implements StorageMock<I> {
 	
 	private final String itemInputFile;
 	private final StorageIoStats ioStats;
-	protected final ContentSource contentSrc;
+	protected final DataInput dataInput;
 	private final int storageCapacity, containerCapacity;
 	private final long dropEveryConnection, missEveryResponse;
 
@@ -56,12 +56,12 @@ implements StorageMock<I> {
 	public StorageMockBase(
 		final String itemInputFile, final int storageCapacity, final int containerCapacity,
 		final int containerCountLimit, final int metricsPeriodSec, final long dropEveryConnection,
-		final long missEveryResponse, final ContentSource contentSrc
+		final long missEveryResponse, final DataInput dataInput
 	) {
 		super();
 		storageMap = new ListingLRUMap<>(containerCountLimit);
 		this.itemInputFile = itemInputFile;
-		this.contentSrc = contentSrc;
+		this.dataInput = dataInput;
 		this.ioStats = new BasicStorageIoStats(this, metricsPeriodSec);
 		this.storageCapacity = storageCapacity;
 		this.containerCapacity = containerCapacity;
@@ -175,7 +175,7 @@ implements StorageMock<I> {
 		final ObjectContainerMock<I> c = getContainer(containerName);
 		if(c != null) {
 			final I obj = c.get(id);
-			obj.setContentSrc(contentSrc);
+			obj.setDataInput(dataInput);
 			return obj;
 		} else {
 			throw new ContainerMockNotFoundException(containerName);
@@ -372,7 +372,7 @@ implements StorageMock<I> {
 	protected void doClose()
 	throws IOException {
 		ioStats.close();
-		contentSrc.close();
+		dataInput.close();
 		try {
 			storageMap.clear();
 		} catch(final ConcurrentModificationException e) {

@@ -2,8 +2,7 @@ package com.emc.mongoose.tests.unit;
 
 import com.emc.mongoose.api.common.SizeInBytes;
 import com.emc.mongoose.api.common.math.Random;
-import com.emc.mongoose.api.model.data.ContentSource;
-import com.emc.mongoose.api.model.data.ContentSourceUtil;
+import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.impl.http.StorageMockFactory;
 import com.emc.mongoose.ui.config.Config;
@@ -93,7 +92,7 @@ public class S3ApiTest {
 		final StorageConfig.NetConfig netConfig = storageConfig.getNetConfig();
 		final ItemConfig.NamingConfig namingConfig = itemConfig.getNamingConfig();
 		final ItemConfig.DataConfig.ContentConfig contentConfig = itemConfig.getDataConfig().getContentConfig();
-		final ContentSource contentSrc = ContentSourceUtil.getInstance(
+		final DataInput dataInput = DataInput.getInstance(
 			contentConfig.getFile(), contentConfig.getSeed(), contentConfig.getRingConfig().getSize(),
 			contentConfig.getRingConfig().getCache()
 		);
@@ -101,7 +100,7 @@ public class S3ApiTest {
 		storageMock = new StorageMockFactory(
 			itemConfig.getInputConfig().getFile(), mockConfig.getCapacity(), containerConfig.getCapacity(),
 			containerConfig.getCountLimit(), (int) stepConfig.getMetricsConfig().getPeriod(), failConfig.getConnections(),
-			failConfig.getResponses(), contentSrc, netConfig.getNodeConfig().getPort(), netConfig.getSsl(),
+			failConfig.getResponses(), dataInput, netConfig.getNodeConfig().getPort(), netConfig.getSsl(),
 			(float) stepConfig.getLimitConfig().getRate(), namingConfig.getPrefix(), namingConfig.getRadix()
 		)
 			.newStorageMock();

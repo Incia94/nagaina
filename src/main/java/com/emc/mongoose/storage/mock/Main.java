@@ -1,8 +1,7 @@
 package com.emc.mongoose.storage.mock;
 
 import com.emc.mongoose.api.common.concurrent.Daemon;
-import com.emc.mongoose.api.model.data.ContentSource;
-import com.emc.mongoose.api.model.data.ContentSourceUtil;
+import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.storage.mock.impl.http.StorageMockFactory;
 import com.emc.mongoose.ui.cli.CliArgParser;
 import com.emc.mongoose.ui.config.Config;
@@ -69,7 +68,7 @@ public class Main {
 		final ItemConfig itemConfig = config.getItemConfig();
 		final NamingConfig namingConfig = itemConfig.getNamingConfig();
 		final ContentConfig contentConfig = itemConfig.getDataConfig().getContentConfig();
-		final ContentSource contentSrc = ContentSourceUtil.getInstance(
+		final DataInput contentSrc = DataInput.getInstance(
 			contentConfig.getFile(), contentConfig.getSeed(), contentConfig.getRingConfig().getSize(),
 			contentConfig.getRingConfig().getCache()
 		);

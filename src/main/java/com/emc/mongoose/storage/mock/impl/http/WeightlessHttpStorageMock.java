@@ -3,7 +3,7 @@ package com.emc.mongoose.storage.mock.impl.http;
 import com.emc.mongoose.api.model.NamingThreadFactory;
 import com.emc.mongoose.api.common.concurrent.ThreadUtil;
 import com.emc.mongoose.api.common.net.ssl.SslContext;
-import com.emc.mongoose.api.model.data.ContentSource;
+import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.impl.base.BasicDataItemMock;
 import com.emc.mongoose.storage.mock.impl.base.StorageMockBase;
@@ -54,12 +54,12 @@ extends StorageMockBase<DataItemMock>{
 	public WeightlessHttpStorageMock(
 		final String itemInputFile, final int storageCapacity, final int containerCapacity,
 		final int containerCountLimit, final int metricsPeriodSec, final long dropEveryConnection,
-		final long missEveryResponse, final ContentSource contentSrc, final int port, final boolean sslFlag,
+		final long missEveryResponse, final DataInput dataInput, final int port, final boolean sslFlag,
 		final List<ChannelInboundHandler> handlers
 	) {
 		super(
 			itemInputFile, storageCapacity, containerCapacity, containerCountLimit, metricsPeriodSec,
-			dropEveryConnection, missEveryResponse, contentSrc
+			dropEveryConnection, missEveryResponse, dataInput
 		);
 		this.port = port;
 		this.sslFlag = sslFlag;
