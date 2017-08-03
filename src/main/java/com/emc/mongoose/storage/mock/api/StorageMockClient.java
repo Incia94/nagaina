@@ -1,6 +1,6 @@
 package com.emc.mongoose.storage.mock.api;
 
-import com.emc.mongoose.api.common.concurrent.Daemon;
+import com.emc.mongoose.api.model.concurrent.Daemon;
 
 import javax.jmdns.ServiceListener;
 import java.util.concurrent.ExecutionException;

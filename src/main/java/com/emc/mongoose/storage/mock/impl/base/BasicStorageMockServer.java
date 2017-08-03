@@ -1,7 +1,7 @@
 package com.emc.mongoose.storage.mock.impl.base;
 
-import com.emc.mongoose.api.common.net.ServiceUtil;
-import com.emc.mongoose.api.model.DaemonBase;
+import com.emc.mongoose.api.model.concurrent.DaemonBase;
+import com.emc.mongoose.api.model.svc.ServiceUtil;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.api.StorageMockServer;
