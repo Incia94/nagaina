@@ -175,7 +175,9 @@ implements StorageMock<I> {
 		final ObjectContainerMock<I> c = getContainer(containerName);
 		if(c != null) {
 			final I obj = c.get(id);
-			obj.setDataInput(dataInput);
+			if(obj != null) {
+				obj.setDataInput(dataInput);
+			}
 			return obj;
 		} else {
 			throw new ContainerMockNotFoundException(containerName);
