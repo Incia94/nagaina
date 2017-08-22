@@ -48,7 +48,7 @@ ext {
 		slf4j             : "1.7.24",
 		log4j             : "2.8.2",
 		metrics           : "3.2.2",
-		mongoose          : "3.5.0-alpha2",
+		mongoose          : "3.5.0-alpha3",
 		netty             : "4.1.12.Final",
 	]
 
@@ -71,16 +71,16 @@ ext {
 
 dependencies {
 	compile(
-		/*"com.github.emc-mongoose:mongoose-api-common:${depVersion.mongoose}",
+		"com.github.emc-mongoose:mongoose-api-common:${depVersion.mongoose}",
 		"com.github.emc-mongoose:mongoose-api-model:${depVersion.mongoose}",
 		"com.github.emc-mongoose:mongoose-api-metrics:${depVersion.mongoose}",
 		"com.github.emc-mongoose:mongoose-ui:${depVersion.mongoose}",
-		*/files(
+		/*files(
 			"../mongoose/api/common/build/libs/mongoose-api-common.jar",
 			"../mongoose/api/model/build/libs/mongoose-api-model.jar",
 			"../mongoose/api/metrics/build/libs/mongoose-api-metrics.jar",
 			"../mongoose/ui/build/libs/mongoose-ui.jar"
-		),
+		),*/
 
 		"com.github.akurilov:java-commons:${depVersion.commonsJava}",
 		"commons-lang:commons-lang:${depVersion.commonsLang}",
