@@ -1,6 +1,6 @@
 package com.emc.mongoose.storage.mock.impl.http.request;
 
-import com.emc.mongoose.api.common.ByteRange;
+import com.github.akurilov.commons.collection.Range;
 import com.emc.mongoose.api.model.item.DataItem;
 import com.emc.mongoose.storage.mock.api.DataItemMock;
 import com.emc.mongoose.storage.mock.api.StorageIoStats;
@@ -332,14 +332,14 @@ extends ChannelInboundHandlerAdapter {
 		final List<String> rangeHeadersValues
 	) throws ContainerMockException, ObjectMockNotFoundException, NumberFormatException {
 		String ranges[];
-		ByteRange byteRange;
+		Range byteRange;
 		for(final String rangeValues: rangeHeadersValues) {
 			if(rangeValues.startsWith(VALUE_RANGE_PREFIX)) {
 				ranges = rangeValues
 					.substring(VALUE_RANGE_PREFIX.length(), rangeValues.length())
 					.split(",");
 				for(final String range : ranges) {
-					byteRange = new ByteRange(range);
+					byteRange = new Range(range);
 					localStorage.updateObject(containerName, id, size, byteRange);
 				}
 			} else {
@@ -442,7 +442,7 @@ extends ChannelInboundHandlerAdapter {
 	) throws IOException {
 
 		String ranges[];
-		ByteRange byteRange;
+		Range byteRange;
 		long beg, end, size, sumSize = 0;
 		int cellIdx;
 		long cellOffset, cellSize, sliceOffset, sliceSize;
@@ -461,7 +461,7 @@ extends ChannelInboundHandlerAdapter {
 						.split(",");
 					for(final String range : ranges) {
 						
-						byteRange = new ByteRange(range);
+						byteRange = new Range(range);
 						beg = byteRange.getBeg();
 						end = byteRange.getEnd();
 						
@@ -537,7 +537,7 @@ extends ChannelInboundHandlerAdapter {
 						.split(",");
 					for(final String range : ranges) {
 						
-						byteRange = new ByteRange(range);
+						byteRange = new Range(range);
 						beg = byteRange.getBeg();
 						end = byteRange.getEnd();
 	

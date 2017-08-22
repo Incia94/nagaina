@@ -40,6 +40,7 @@ ext {
 	depVersion = [
 		commonsCodec      : "1.10",
 		commonsCollections: "4.1",
+		commonsJava       : "1.0.2",
 		commonsLang       : "2.6",
 		disruptor         : "3.3.4",
 		jackson           : "2.8.9",
@@ -70,17 +71,18 @@ ext {
 
 dependencies {
 	compile(
-		"com.github.emc-mongoose:mongoose-api-common:${depVersion.mongoose}",
+		/*"com.github.emc-mongoose:mongoose-api-common:${depVersion.mongoose}",
 		"com.github.emc-mongoose:mongoose-api-model:${depVersion.mongoose}",
 		"com.github.emc-mongoose:mongoose-api-metrics:${depVersion.mongoose}",
 		"com.github.emc-mongoose:mongoose-ui:${depVersion.mongoose}",
-		/*files(
+		*/files(
 			"../mongoose/api/common/build/libs/mongoose-api-common.jar",
 			"../mongoose/api/model/build/libs/mongoose-api-model.jar",
 			"../mongoose/api/metrics/build/libs/mongoose-api-metrics.jar",
 			"../mongoose/ui/build/libs/mongoose-ui.jar"
-		),*/
+		),
 
+		"com.github.akurilov:java-commons:${depVersion.commonsJava}",
 		"commons-lang:commons-lang:${depVersion.commonsLang}",
 		"org.apache.commons:commons-collections4:${depVersion.commonsCollections}",
 		"commons-codec:commons-codec:${depVersion.commonsCodec}",

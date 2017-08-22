@@ -1,6 +1,6 @@
 package com.emc.mongoose.storage.mock.api;
 
-import com.emc.mongoose.api.common.collection.Listable;
+import com.github.akurilov.commons.collection.Listable;
 
 import java.io.Closeable;
 import java.util.Collection;

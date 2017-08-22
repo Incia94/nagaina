@@ -1,6 +1,6 @@
 package com.emc.mongoose.tests.unit;
 
-import com.emc.mongoose.api.common.SizeInBytes;
+import com.github.akurilov.commons.system.SizeInBytes;
 import com.emc.mongoose.api.common.math.Random;
 import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.storage.mock.api.StorageMock;

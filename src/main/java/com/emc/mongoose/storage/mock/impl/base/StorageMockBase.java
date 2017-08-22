@@ -1,7 +1,8 @@
 package com.emc.mongoose.storage.mock.impl.base;
 
-import com.emc.mongoose.api.common.ByteRange;
-import com.emc.mongoose.api.common.collection.ListingLRUMap;
+import com.github.akurilov.commons.collection.Range;
+import com.github.akurilov.commons.collection.ListingLRUMap;
+
 import com.emc.mongoose.api.model.concurrent.DaemonBase;
 import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.api.model.item.ItemFactory;
@@ -123,7 +124,7 @@ implements StorageMock<I> {
 	
 	@Override
 	public final void updateObject(
-		final String containerName, final String id, final long size, final ByteRange byteRange
+		final String containerName, final String id, final long size, final Range byteRange
 	) throws ContainerMockException, ObjectMockNotFoundException {
 		final ObjectContainerMock<I> c = getContainer(containerName);
 		if(c != null) {
