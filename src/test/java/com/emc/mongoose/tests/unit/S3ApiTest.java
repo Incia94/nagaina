@@ -1,7 +1,7 @@
 package com.emc.mongoose.tests.unit;
 
 import com.github.akurilov.commons.system.SizeInBytes;
-import com.emc.mongoose.api.common.math.Random;
+import com.github.akurilov.commons.math.Random;
 import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.storage.mock.api.StorageMock;
 import com.emc.mongoose.storage.mock.impl.http.StorageMockFactory;
