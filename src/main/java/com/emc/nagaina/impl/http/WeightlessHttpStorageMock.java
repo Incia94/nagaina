@@ -2,7 +2,7 @@ package com.emc.nagaina.impl.http;
 
 import com.emc.mongoose.api.common.concurrent.ThreadUtil;
 import com.emc.mongoose.api.common.net.ssl.SslContext;
-import com.emc.mongoose.api.model.concurrent.NamingThreadFactory;
+import com.emc.mongoose.api.model.concurrent.LogContextThreadFactory;
 import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.ui.log.LogUtil;
 import com.emc.mongoose.ui.log.Loggers;
@@ -77,17 +77,17 @@ extends StorageMockBase<DataItemMock>{
 		try {
 			if(SystemUtils.IS_OS_LINUX) {
 				dispatcherGroup = new EpollEventLoopGroup(
-					1, new NamingThreadFactory("dispatcher@port#" + port + "-", true)
+					1, new LogContextThreadFactory("dispatcher@port#" + port + "-", true)
 				);
 				workerGroup = new EpollEventLoopGroup(
-					workerCount, new NamingThreadFactory("ioworker@port#" + port + "-", true)
+					workerCount, new LogContextThreadFactory("ioworker@port#" + port + "-", true)
 				);
 			} else {
 				dispatcherGroup = new NioEventLoopGroup(
-					1, new NamingThreadFactory("dispatcher@port#" + port + "-", true)
+					1, new LogContextThreadFactory("dispatcher@port#" + port + "-", true)
 				);
 				workerGroup = new NioEventLoopGroup(
-					workerCount, new NamingThreadFactory("ioworker@port#" + port + "-", true)
+					workerCount, new LogContextThreadFactory("ioworker@port#" + port + "-", true)
 				);
 			}
 			final ServerBootstrap serverBootstrap = new ServerBootstrap();

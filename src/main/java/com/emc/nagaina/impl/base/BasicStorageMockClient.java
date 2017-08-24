@@ -11,7 +11,7 @@ import com.emc.nagaina.api.StorageMockServer;
 import com.emc.nagaina.api.exception.ContainerMockException;
 import com.emc.nagaina.impl.remote.MDns;
 import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.api.model.concurrent.NamingThreadFactory;
+import com.emc.mongoose.api.model.concurrent.LogContextThreadFactory;
 import static com.emc.nagaina.impl.http.WeightlessHttpStorageMock.SVC_NAME;
 import com.emc.mongoose.ui.log.Loggers;
 
@@ -60,7 +60,7 @@ implements StorageMockClient<T> {
 		this.executor = new ThreadPoolExecutor(
 			ThreadUtil.getHardwareThreadCount(), ThreadUtil.getHardwareThreadCount(),
 			0, TimeUnit.DAYS, new ArrayBlockingQueue<>(TaskSequencer.DEFAULT_TASK_QUEUE_SIZE_LIMIT),
-			new NamingThreadFactory("storageMockClientWorker", true),
+			new LogContextThreadFactory("storageMockClientWorker", true),
 			(r, e) -> Loggers.ERR.error("Task {} rejected", r.toString())
 		) {
 			@Override
