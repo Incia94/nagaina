@@ -2,7 +2,9 @@ package com.emc.nagaina.tests.unit;
 
 import com.github.akurilov.commons.system.SizeInBytes;
 import com.github.akurilov.commons.math.Random;
-import com.emc.nagaina.api.model.data.DataInput;
+
+import org.apache.logging.log4j.Level;
+
 import com.emc.nagaina.api.StorageMock;
 import com.emc.nagaina.impl.http.StorageMockFactory;
 import com.emc.nagaina.ui.config.Config;
@@ -10,9 +12,10 @@ import static com.emc.nagaina.ui.config.Config.ItemConfig;
 import static com.emc.nagaina.ui.config.Config.StorageConfig;
 import static com.emc.nagaina.ui.config.Config.TestConfig.StepConfig;
 import com.emc.nagaina.ui.config.reader.jackson.ConfigParser;
-import com.emc.nagaina.ui.log.LogUtil;
-import com.emc.nagaina.ui.log.Loggers;
-import org.apache.logging.log4j.Level;
+
+import com.emc.mongoose.api.model.data.DataInput;
+import com.emc.mongoose.ui.log.LogUtil;
+import com.emc.mongoose.ui.log.Loggers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
