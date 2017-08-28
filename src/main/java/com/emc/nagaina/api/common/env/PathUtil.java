@@ -62,6 +62,18 @@ public interface PathUtil {
 					.getParentFile()
 					.getParentFile();
 			}
+			// another bandage for idea (2017.2)
+			if(
+				basePathStr.endsWith(
+					File.separator + "out" + File.separator + "production" + File.separator
+						+ "classes"
+				)
+			) {
+				basePath = basePath
+					.getParentFile()
+					.getParentFile()
+					.getParentFile();
+			}
 			// bandage for gradle
 			if(
 				basePathStr.endsWith(
@@ -70,6 +82,12 @@ public interface PathUtil {
 			) {
 				basePath = basePath
 					.getParentFile()
+					.getParentFile()
+					.getParentFile();
+			}
+			// another bandage for gradle
+			if(basePathStr.endsWith(File.separator + "build" + File.separator + "libs")) {
+				basePath = basePath
 					.getParentFile()
 					.getParentFile();
 			}

@@ -40,7 +40,7 @@ ext {
 	depVersion = [
 		commonsCodec      : "1.10",
 		commonsCollections: "4.1",
-		commonsJava       : "1.0.6",
+		commonsJava       : "1.0.7",
 		commonsLang       : "2.6",
 		disruptor         : "3.3.4",
 		jackson           : "2.9.0",
@@ -48,7 +48,7 @@ ext {
 		slf4j             : "1.7.24",
 		log4j             : "2.8.2",
 		metrics           : "3.2.3",
-		mongoose          : "3.5.0-alpha5",
+		mongoose          : "3.5.0-alpha6",
 		netty             : "4.1.14.Final",
 	]
 

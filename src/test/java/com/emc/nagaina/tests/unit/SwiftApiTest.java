@@ -132,40 +132,44 @@ public class SwiftApiTest {
 		final int objCountPerThread = objCount / concurrency;
 		for(int i = 0; i < concurrency; i ++) {
 			final int i_ = i;
-			final Runnable task = () -> {
-				int respCode;
-				HttpURLConnection conn_;
-				OutputStream out_;
-				String objId;
-				try {
-					for(int j = 0; j < objCountPerThread; j ++) {
-						objId = objIds.get(objCountPerThread * i_ + j);
-						conn_ = (HttpURLConnection) new URL(
-							"http", "127.0.0.1", 9020, "/v1/ns1/" + CONTAINER + "/" + objId
-						).openConnection();
-						conn_.setFixedLengthStreamingMode(objSize);
-						conn_.setDoOutput(true);
-						conn_.setRequestMethod("PUT");
-						out_ = conn_.getOutputStream();
-						int n = objSize / SAMPLE_DATA.length;
-						for(int k = 0; k < n; k ++) {
-							out_.write(SAMPLE_DATA);
+			executor.submit(
+				() -> {
+					int respCode;
+					HttpURLConnection conn_;
+					OutputStream out_;
+					String objId;
+					try {
+						for(int j = 0; j < objCountPerThread; j++) {
+							objId = objIds.get(objCountPerThread * i_ + j);
+							conn_ = (HttpURLConnection) new URL(
+								"http", "127.0.0.1", 9020, "/v1/ns1/" + CONTAINER + "/" + objId
+							)
+								.openConnection();
+							conn_.setFixedLengthStreamingMode(objSize);
+							conn_.setDoOutput(true);
+							conn_.setRequestMethod("PUT");
+							out_ = conn_.getOutputStream();
+							int n = objSize / SAMPLE_DATA.length;
+							for(int k = 0; k < n; k++) {
+								out_.write(SAMPLE_DATA);
+							}
+							n = objSize % SAMPLE_DATA.length;
+							out_.write(SAMPLE_DATA, 0, n);
+							out_.flush();
+							out_.close();
+							respCode = conn_.getResponseCode();
+							if(HttpURLConnection.HTTP_OK != respCode) {
+								Loggers.ERR.error(
+									"Create object \"{}\" response code: {}", objId, respCode
+								);
+							}
+							conn_.disconnect();
 						}
-						n = objSize % SAMPLE_DATA.length;
-						out_.write(SAMPLE_DATA, 0, n);
-						out_.flush();
-						out_.close();
-						respCode = conn_.getResponseCode();
-						if(HttpURLConnection.HTTP_OK != respCode) {
-							Loggers.ERR.error("Create object \"{}\" response code: {}", objId, respCode);
-						}
-						conn_.disconnect();
+					} catch(final Exception e) {
+						LogUtil.exception(Level.ERROR, e, "Failure");
 					}
-				} catch(final Exception e) {
-					LogUtil.exception(Level.ERROR, e, "Failure");
 				}
-			};
-			executor.submit(task);
+			);
 		}
 		executor.shutdown();
 		executor.awaitTermination(5, TimeUnit.MINUTES);
