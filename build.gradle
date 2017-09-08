@@ -46,10 +46,10 @@ ext {
 		jackson           : "2.9.0",
 		javassist         : "3.21.0-GA",
 		slf4j             : "1.7.24",
-		log4j             : "2.8.2",
-		metrics           : "3.2.3",
-		mongoose          : "3.5.0-alpha6",
-		netty             : "4.1.14.Final",
+		log4j             : "2.9.0",
+		metrics           : "3.2.4",
+		mongoose          : "3.5.0-alpha7",
+		netty             : "4.1.15.Final",
 	]
 
 	setClassPath = {
