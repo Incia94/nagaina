@@ -166,7 +166,7 @@ public class SwiftApiTest {
 							conn_.disconnect();
 						}
 					} catch(final Exception e) {
-						LogUtil.exception(Level.ERROR, e, "Failure");
+						LogUtil.exception(Level.ERROR, e, "Failed to write the object");
 					}
 				}
 			);
