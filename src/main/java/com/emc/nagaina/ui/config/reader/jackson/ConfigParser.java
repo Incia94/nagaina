@@ -3,7 +3,6 @@ package com.emc.nagaina.ui.config.reader.jackson;
 import com.emc.mongoose.api.common.exception.OmgDoesNotPerformException;
 import com.emc.mongoose.api.common.exception.OmgLookAtMyConsoleException;
 import static com.emc.mongoose.api.common.Constants.DIR_CONFIG;
-import static com.emc.mongoose.api.common.Constants.FNAME_CONFIG;
 
 import com.emc.nagaina.ui.config.Config;
 import com.emc.nagaina.api.common.env.PathUtil;
@@ -31,7 +30,7 @@ public abstract class ConfigParser {
 	public static Config loadDefaultConfig()
 		throws IOException {
 		final String defaultConfigPath = PathUtil.getBasePathForClass(Config.class) +
-			File.separator + DIR_CONFIG + File.separator + FNAME_CONFIG;
+			File.separator + DIR_CONFIG + File.separator + "defaults.json";
 		final ObjectMapper mapper = new ObjectMapper();
 		return mapper.readValue(new File(defaultConfigPath), Config.class);
 	}
