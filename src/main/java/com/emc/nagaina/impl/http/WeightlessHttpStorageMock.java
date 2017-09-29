@@ -1,7 +1,6 @@
 package com.emc.nagaina.impl.http;
 
 import com.emc.mongoose.api.common.concurrent.ThreadUtil;
-import com.emc.mongoose.api.common.net.ssl.SslContext;
 import com.emc.mongoose.api.model.concurrent.LogContextThreadFactory;
 import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.ui.log.LogUtil;
@@ -24,14 +23,15 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
 import org.apache.commons.lang.SystemUtils;
 
 import org.apache.logging.log4j.Level;
 
-import javax.net.ssl.SSLEngine;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -64,13 +64,7 @@ extends StorageMockBase<DataItemMock>{
 		);
 		this.port = port;
 		this.sslFlag = sslFlag;
-		final int workerCount/*;
-		final int confWorkerCount = storageConfig.getDriverConfig().getIoConfig().getWorkers();
-		if(confWorkerCount < 1) {
-			workerCount*/ = ThreadUtil.getHardwareThreadCount();
-		/*} else {
-			workerCount = confWorkerCount;
-		}*/
+		final int workerCount = ThreadUtil.getHardwareThreadCount();
 
 		this.handlers = handlers;
 
@@ -103,18 +97,11 @@ extends StorageMockBase<DataItemMock>{
 						throws Exception {
 							final ChannelPipeline pipeline = socketChannel.pipeline();
 							if(sslFlag) {
-								Loggers.MSG.debug("SSL/TLS is enabled for the channel");
-								final SSLEngine sslEngine = SslContext.INSTANCE.createSSLEngine();
-								sslEngine.setEnabledProtocols(
-									new String[] { "TLSv1", "TLSv1.1", "TLSv1.2", "SSLv3" }
-								);
-								sslEngine.setUseClientMode(false);
-								sslEngine.setEnabledCipherSuites(
-									SslContext.INSTANCE.getServerSocketFactory().getSupportedCipherSuites()
-								);
-								sslEngine.setNeedClientAuth(false);
-								sslEngine.setEnableSessionCreation(true);
-								pipeline.addLast(new SslHandler(sslEngine));
+								final SelfSignedCertificate ssc = new SelfSignedCertificate();
+								final SslContext sslCtx = SslContextBuilder
+									.forServer(ssc.certificate(), ssc.privateKey())
+									.build();
+								pipeline.addLast(sslCtx.newHandler(socketChannel.alloc()));
 							}
 							pipeline.addLast(new HttpServerCodec());
 							pipeline.addLast(new ChunkedWriteHandler());

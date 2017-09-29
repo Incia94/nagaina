@@ -48,7 +48,7 @@ ext {
 		slf4j             : "1.7.24",
 		log4j             : "2.8.2",
 		metrics           : "3.2.4",
-		mongoose          : "3.5.0-alpha8",
+		mongoose          : "4.0.0-alpha0",
 		netty             : "4.1.15.Final",
 	]
 
