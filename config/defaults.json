@@ -19,7 +19,7 @@
 			"prefix" : null,
 			"radix" : 36,
 			"offset" : 0,
-			"length" : 13
+			"length" : 12
 		},
 		"output" : {
 			"delay" : 0,
@@ -86,7 +86,7 @@
 			"name" : null
 		}
 	},
-	"version" : "3.6.0",
+	"version" : "3.6.1",
 	"aliasing" : [
 		{
 			"name" : "run-id",
