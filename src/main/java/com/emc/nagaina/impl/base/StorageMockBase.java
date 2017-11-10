@@ -301,6 +301,7 @@ implements StorageMock<I> {
 				if(container == null) {
 					container = createContainer(objNameParts[0]);
 				}
+				object.setName(objNameParts[1]);
 				container.put(objNameParts[1], object);
 			} else if(objNameParts.length == 3) {
 				if(objNameParts[0].isEmpty()) {
@@ -308,6 +309,7 @@ implements StorageMock<I> {
 					if(container == null) {
 						container = createContainer(objNameParts[1]);
 					}
+					object.setName(objNameParts[2]);
 					container.put(objNameParts[2], object);
 				}
 			}

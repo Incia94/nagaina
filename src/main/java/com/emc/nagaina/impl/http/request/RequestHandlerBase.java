@@ -659,8 +659,7 @@ extends ChannelInboundHandlerAdapter {
 
 	protected final T listContainer(
 		final String name, final String marker, final List<T> buffer, final int maxCount
-	)
-	throws ContainerMockException {
+	) throws ContainerMockException {
 		final T lastObject = localStorage.listObjects(name, marker, buffer, maxCount);
 		if(Loggers.MSG.isTraceEnabled()) {
 			Loggers.MSG.trace(
