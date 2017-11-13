@@ -404,31 +404,33 @@ extends ChannelInboundHandlerAdapter {
 		final long size = object.size();
 		HttpUtil.setContentLength(response, size);
 		ctx.write(response);
-		if(object.isUpdated()) {
-			if(localStorage.sslEnabled()) {
-				DataItem nextRange;
-				for(int i = 0; i < DataItem.getRangeCount(object.size()); i ++) {
-					nextRange = object.slice(DataItem.getRangeOffset(i), object.getRangeSize(i));
-					if(object.isRangeUpdated(i)) {
-						nextRange.layer(nextRange.layer() + 1);
+		if(size > 0) {
+			if(object.isUpdated()) {
+				if(localStorage.sslEnabled()) {
+					DataItem nextRange;
+					for(int i = 0; i < DataItem.getRangeCount(object.size()); i ++) {
+						nextRange = object.slice(DataItem.getRangeOffset(i), object.getRangeSize(i));
+						if(object.isRangeUpdated(i)) {
+							nextRange.layer(nextRange.layer() + 1);
+						}
+						ctx.write(new SeekableByteChannelChunkedNioStream(nextRange));
 					}
-					ctx.write(new SeekableByteChannelChunkedNioStream(nextRange));
+				} else {
+					DataItem nextRange;
+					for(int i = 0; i < DataItem.getRangeCount(object.size()); i ++) {
+						nextRange = object.slice(DataItem.getRangeOffset(i), object.getRangeSize(i));
+						if(object.isRangeUpdated(i)) {
+							nextRange.layer(nextRange.layer() + 1);
+						}
+						ctx.write(new DataItemFileRegion(nextRange));
+					}
 				}
 			} else {
-				DataItem nextRange;
-				for(int i = 0; i < DataItem.getRangeCount(object.size()); i ++) {
-					nextRange = object.slice(DataItem.getRangeOffset(i), object.getRangeSize(i));
-					if(object.isRangeUpdated(i)) {
-						nextRange.layer(nextRange.layer() + 1);
-					}
-					ctx.write(new DataItemFileRegion(nextRange));
+				if(localStorage.sslEnabled()) {
+					ctx.write(new SeekableByteChannelChunkedNioStream(object));
+				} else {
+					ctx.write(new DataItemFileRegion(object));
 				}
-			}
-		} else {
-			if(localStorage.sslEnabled()) {
-				ctx.write(new SeekableByteChannelChunkedNioStream(object));
-			} else {
-				ctx.write(new DataItemFileRegion(object));
 			}
 		}
 		ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
