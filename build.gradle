@@ -49,7 +49,7 @@ ext {
 		log4j             : "2.8.2",
 		metrics           : "3.2.5",
 		mongoose          : "[3.6,)",
-		netty             : "4.1.16.Final",
+		netty             : "4.1.17.Final",
 	]
 
 	setClassPath = {
