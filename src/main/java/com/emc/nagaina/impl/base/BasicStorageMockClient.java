@@ -2,7 +2,6 @@ package com.emc.nagaina.impl.base;
 
 import com.emc.mongoose.api.common.concurrent.AnyNotNullSharedFutureTaskBase;
 import com.emc.mongoose.api.model.concurrent.DaemonBase;
-import com.emc.mongoose.api.common.concurrent.TaskSequencer;
 import com.emc.mongoose.api.common.concurrent.ThreadUtil;
 import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.nagaina.api.DataItemMock;
@@ -59,7 +58,7 @@ implements StorageMockClient<T> {
 	public BasicStorageMockClient(final DataInput dataInput, final JmDNS jmDns) {
 		this.executor = new ThreadPoolExecutor(
 			ThreadUtil.getHardwareThreadCount(), ThreadUtil.getHardwareThreadCount(),
-			0, TimeUnit.DAYS, new ArrayBlockingQueue<>(TaskSequencer.DEFAULT_TASK_QUEUE_SIZE_LIMIT),
+			0, TimeUnit.DAYS, new ArrayBlockingQueue<>(0x1000),
 			new LogContextThreadFactory("storageMockClientWorker", true),
 			(r, e) -> Loggers.ERR.error("Task {} rejected", r.toString())
 		) {
