@@ -1,6 +1,5 @@
 package com.emc.nagaina.impl.http;
 
-import com.emc.mongoose.api.common.concurrent.ThreadUtil;
 import com.emc.mongoose.api.model.concurrent.LogContextThreadFactory;
 import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.ui.log.LogUtil;
@@ -9,6 +8,8 @@ import com.emc.mongoose.ui.log.Loggers;
 import com.emc.nagaina.api.DataItemMock;
 import com.emc.nagaina.impl.base.BasicDataItemMock;
 import com.emc.nagaina.impl.base.StorageMockBase;
+
+import com.github.akurilov.commons.concurrent.ThreadUtil;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
