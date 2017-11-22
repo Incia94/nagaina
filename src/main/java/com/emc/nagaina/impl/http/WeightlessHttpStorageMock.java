@@ -26,6 +26,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
@@ -101,6 +102,7 @@ extends StorageMockBase<DataItemMock>{
 								final SelfSignedCertificate ssc = new SelfSignedCertificate();
 								final SslContext sslCtx = SslContextBuilder
 									.forServer(ssc.certificate(), ssc.privateKey())
+									.sslProvider(SslProvider.OPENSSL)
 									.build();
 								pipeline.addLast(sslCtx.newHandler(socketChannel.alloc()));
 							}
