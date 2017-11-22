@@ -61,7 +61,7 @@
 				"fsAccess" : false,
 				"headers" : {
 					"Connection" : "Keep-Alive",
-					"User-Agent" : "nagaina/3.6.8"
+					"User-Agent" : "nagaina/3.6.7"
 				},
 				"namespace" : null,
 				"versioning" : false
@@ -86,7 +86,7 @@
 			"name" : null
 		}
 	},
-	"version" : "3.6.8",
+	"version" : "3.6.7",
 	"aliasing" : [
 		{
 			"name" : "run-id",

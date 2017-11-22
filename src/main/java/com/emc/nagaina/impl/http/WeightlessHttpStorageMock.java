@@ -102,7 +102,6 @@ extends StorageMockBase<DataItemMock>{
 								final SelfSignedCertificate ssc = new SelfSignedCertificate();
 								final SslContext sslCtx = SslContextBuilder
 									.forServer(ssc.certificate(), ssc.privateKey())
-									.sslProvider(SslProvider.OPENSSL)
 									.build();
 								pipeline.addLast(sslCtx.newHandler(socketChannel.alloc()));
 							}
