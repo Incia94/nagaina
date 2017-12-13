@@ -1,8 +1,5 @@
 package com.emc.nagaina.impl.http;
 
-import com.emc.mongoose.api.common.exception.OmgDoesNotPerformException;
-import com.emc.mongoose.api.common.exception.OmgLookAtMyConsoleException;
-import com.emc.mongoose.api.common.net.NetUtil;
 import com.emc.mongoose.api.model.concurrent.DaemonBase;
 import com.emc.mongoose.api.model.data.DataInput;
 import com.emc.mongoose.ui.log.LogUtil;
@@ -15,6 +12,8 @@ import com.emc.nagaina.api.StorageMockNode;
 import com.emc.nagaina.api.StorageMockServer;
 import com.emc.nagaina.impl.base.BasicStorageMockClient;
 import com.emc.nagaina.impl.base.BasicStorageMockServer;
+
+import com.github.akurilov.commons.net.NetUtil;
 
 import org.apache.logging.log4j.Level;
 
@@ -41,7 +40,7 @@ implements StorageMockNode<DataItemMock> {
 			Loggers.MSG.info("mDNS address: " + jmDns.getInetAddress());
 			server = new BasicStorageMockServer<>(storage, jmDns);
 			client = new BasicStorageMockClient<>(dataInput, jmDns);
-		} catch(final IOException | OmgDoesNotPerformException | OmgLookAtMyConsoleException e) {
+		} catch(final IOException e) {
 			LogUtil.exception(Level.ERROR, e, "Failed to create storage mock node");
 		}
 	}
