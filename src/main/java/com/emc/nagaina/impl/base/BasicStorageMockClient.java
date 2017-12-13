@@ -1,18 +1,20 @@
 package com.emc.nagaina.impl.base;
 
-import com.emc.mongoose.api.common.concurrent.AnyNotNullSharedFutureTaskBase;
+import com.github.akurilov.commons.concurrent.AnyNotNullSharedFutureTaskBase;
+import com.github.akurilov.commons.concurrent.ThreadUtil;
+
 import com.emc.mongoose.api.model.concurrent.DaemonBase;
-import com.emc.mongoose.api.common.concurrent.ThreadUtil;
 import com.emc.mongoose.api.model.data.DataInput;
+import com.emc.mongoose.ui.log.LogUtil;
+import com.emc.mongoose.api.model.concurrent.LogContextThreadFactory;
+import com.emc.mongoose.ui.log.Loggers;
+
 import com.emc.nagaina.api.DataItemMock;
 import com.emc.nagaina.api.StorageMockClient;
 import com.emc.nagaina.api.StorageMockServer;
 import com.emc.nagaina.api.exception.ContainerMockException;
 import com.emc.nagaina.impl.remote.MDns;
-import com.emc.mongoose.ui.log.LogUtil;
-import com.emc.mongoose.api.model.concurrent.LogContextThreadFactory;
 import static com.emc.nagaina.impl.http.WeightlessHttpStorageMock.SVC_NAME;
-import com.emc.mongoose.ui.log.Loggers;
 
 import org.apache.logging.log4j.Level;
 
