@@ -38,18 +38,19 @@ repositories {
 ext {
 
 	depVersion = [
-		commonsCodec      : "1.10",
+		commonsCodec      : "1.11",
 		commonsCollections: "4.1",
-		commonsJava       : "[1.4.1,)",
+		commonsJava       : "1.4.1",
 		commonsLang       : "2.6",
 		disruptor         : "3.3.4",
 		jackson           : "2.9.1",
-		javassist         : "3.21.0-GA",
+		javassist         : "3.23.1-GA",
 		slf4j             : "1.7.24",
 		log4j             : "2.8.2",
-		metrics           : "3.2.5",
+		metrics           : "4.0.2",
 		mongoose          : "[3.,4.)",
-		netty             : "4.1.17.Final",
+		netty             : "4.1.26.Final",
+		nettyTcNative     : "2.0.12.Final",
 	]
 
 	setClassPath = {
@@ -99,7 +100,9 @@ dependencies {
 		"io.netty:netty-transport:${depVersion.netty}",
 		"io.netty:netty-handler:${depVersion.netty}",
 		"io.netty:netty-codec-http:${depVersion.netty}",
-		"io.netty:netty-transport-native-epoll:${depVersion.netty}:${osdetector.classifier}",
+		"io.netty:netty-transport-native-epoll:${depVersion.netty}:linux-x86_64",
+		"io.netty:netty-transport-native-kqueue:${depVersion.netty}:osx-x86_64",
+		"io.netty:netty-transport-native-unix-common:${depVersion.netty}",
 
 		"org.jmdns:jmdns:3.5.1"
 	)
@@ -108,6 +111,8 @@ dependencies {
 		"com.lmax:disruptor:${depVersion.disruptor}",
 		"org.apache.logging.log4j:log4j-jul:${depVersion.log4j}",
 		"org.apache.logging.log4j:log4j-slf4j-impl:${depVersion.log4j}",
+		"org.javassist:javassist:${depVersion.javassist}",
+		"io.netty:netty-tcnative-boringssl-static:${depVersion.nettyTcNative}",
 		"org.javassist:javassist:${depVersion.javassist}",
 	)
 
