@@ -70,6 +70,12 @@ ext {
 	}
 }
 
+configurations.all {
+	resolutionStrategy {
+		force "com.github.akurilov:java-commons:1.4.1"
+	}
+}
+
 dependencies {
 	compile(
 		"com.github.emc-mongoose:mongoose-api-common:${depVersion.mongoose}",
