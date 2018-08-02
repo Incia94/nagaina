@@ -18,15 +18,18 @@ import io.netty.channel.ChannelInboundHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.epoll.EpollServerSocketChannel;
+import io.netty.channel.kqueue.KQueue;
+import io.netty.channel.kqueue.KQueueServerSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.ssl.OpenSslContext;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
@@ -89,8 +92,11 @@ extends StorageMockBase<DataItemMock>{
 			final ServerBootstrap serverBootstrap = new ServerBootstrap();
 			serverBootstrap.group(dispatcherGroup, workerGroup)
 				.channel(
-					SystemUtils.IS_OS_LINUX ?
-					EpollServerSocketChannel.class : NioServerSocketChannel.class
+					Epoll.isAvailable() ?
+						EpollServerSocketChannel.class :
+						KQueue.isAvailable() ?
+							KQueueServerSocketChannel.class :
+							NioServerSocketChannel.class
 				)
 				.childHandler(
 					new ChannelInitializer<SocketChannel>() {
@@ -102,6 +108,7 @@ extends StorageMockBase<DataItemMock>{
 								final SelfSignedCertificate ssc = new SelfSignedCertificate();
 								final SslContext sslCtx = SslContextBuilder
 									.forServer(ssc.certificate(), ssc.privateKey())
+									.sslProvider(OpenSslContext.defaultServerProvider())
 									.build();
 								pipeline.addLast(sslCtx.newHandler(socketChannel.alloc()));
 							}
