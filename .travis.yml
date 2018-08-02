@@ -29,6 +29,11 @@ env:
       secure: Wi52uI5thNagDmiKWzu4/ZI52MIYMOueWp4G1rM9FPEFs4Fs8NFtHIfavs+OV9eDupFgO0+cY16pdGIGisK0/Xaz3il3UACoCpFg2j6C2Su7KQQhvAYPInGgXfVyX3Si5axv4gM2S5LgYumDnP506yWXfd/XA732xFQKvtQwjjGkVVbQ3NXJBH0fYv6emE0dmN6BQ3Pz/BRqY1koRG8dJvueOcRO4XNShZXdG2glUFMzniES4OuguDyyLvvFqZLWCRV54y91dLBV8hdYTWYAm6l8zaYShR+2s/1wIkpsY1KblZu2vFOuL9aILXBiNM6LKeLh+ryG1Jy90DetMowh/GASXs+TVoywZEQInGOSYQuS79kkWVn1wbwCnhLO2P+LTDyhRfFV8+xCd7XSLI4OZw4cEeRCIszLPOy9Wj+3Y1bXkWTFDdOMTE1/J9OdRZb4+4LWD9orcqiq0JltVCe4O/XuHL/VIdqAzTQkQtXdbNZCbb+S8dRNhLsQlWMS2rhdLEnoCkga7bKTBzevMag6ClNYY6x35ekjo9dmsYx3GEMxfEJec5DTjCyc5MkiCSuBIbExzPb58RDAY2pk2JEBZMP9Xs1tIFNMiT0o6scf40sr/qeFVmlRuwmvh1LWsaK1Tb6QNHE3BNH1y/ACnrg1tXdWLjVvLvt8zAvwR7Azu7E=
     DOCKER_PASS:
       secure: CDTERDY3FuqyGMw7uM/Qm1SwgrhoLd+6dCeELOEPrzodrkcDXWrkoEHB1uLY2xxn/NDI12LAiXEo4qFIisZowRnuWMYh+tKfUnr4dP33aVXNFS8XbQufJHMmJCiTxtMb4Oz2jYB11ufD7ACJmuBpDxM3dIeyaWR1UjI/wDG+EDc6C0vVQ9msiXJx7ExBB+SsUJPoUMAuGVmU3TpaKctIWgAHyTsxXCYK7mIwgQISVnseVgDX+6AAajfiQWkI6ypmkKDcdju//sL6v+C1k2U7GaFCb7gZTN6wWuWPxKOgg7sodgJuIZ//3M6l/mq+iLCRm34NWGSg8w8xjrmVcq70LSx/VdDvtx66qhGKFMh+WRwRsHuP7xJ1dfBk6Mj7g03/0VnXO4Zw3C+2fSbvX7gbbht4QZ7RKReNzAOkd2YKy2+X9Ky7JU4y6/6ZhFeewZjnAKmnlOQ4PkmWntQXB1Z0RGrvYyksKfa3No9XKkpxJDflSb3ZaTyyOvoLXe2aw9LLW4DzvIBHgxEdO/UlejTZAcFDsJgE9wUOQh43vij7/ew+/wwNSZ3dmZ79PUuy1LlPBnoXvXIwT8gWfQVPMPyvgcu4W0CnXwIQsGYnpfsw4iMlgu1VqKNTkO+HEcQHfcPNf9ZvFpSETBiNdHxkYKk4Iu+Sw43G+KCju39P51/IOpY=
+before_install:
+- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+- sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+- sudo apt-get update
+- sudo apt-get -y install docker-ce
 matrix:
   fast_finish: true
 after_success:
