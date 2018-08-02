@@ -39,9 +39,7 @@ matrix:
 after_success:
 - docker login -u $DOCKER_USER -p $DOCKER_PASS
 - export REPO=emcmongoose/nagaina
-- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH;
-  fi`
-- docker build -f docker/Dockerfile -t $REPO:$COMMIT .
-- docker tag $REPO:$COMMIT $REPO:$TAG
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
+- docker build -f docker/Dockerfile -t $REPO:$TAG .
 - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
 - docker push $REPO
