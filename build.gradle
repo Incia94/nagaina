@@ -46,7 +46,7 @@ ext {
 		jackson           : "2.9.1",
 		javassist         : "3.23.1-GA",
 		slf4j             : "1.7.24",
-		log4j             : "2.8.2",
+		log4j             : "2.19.0",
 		metrics           : "4.0.2",
 		mongoose          : "[3.,4.)",
 		netty             : "4.1.26.Final",
